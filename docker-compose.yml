@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: taller_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: taller_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  mediamtx:
+    image: bluenviron/mediamtx:latest
+    container_name: taller_mediamtx
+    restart: always
+    environment:
+      - MTX_PROTOCOLS=tcp
+      - MTX_WEBRTCADDITIONALHOSTS=localhost
+    ports:
+      - "8554:8554"   # RTSP
+      - "1935:1935"   # RTMP
+      - "8888:8888"   # HLS (HTTP Live Streaming)
+      - "8889:8889"   # WebRTC / WHEP
+
+volumes:
+  postgres_data:
+

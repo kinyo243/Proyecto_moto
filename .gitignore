@@ -1,0 +1,32 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Environment files (keep .env.example, ignore real credentials)
+.env
+!.env.example
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing & Coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
