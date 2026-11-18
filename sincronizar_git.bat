@@ -10,7 +10,7 @@ echo.
 set "ROOT_DIR=d:\Personal - Laptop\Proyecto_moto"
 cd /d "%ROOT_DIR%"
 
-echo [1/4] Verificando estado local del proyecto...
+echo [1/4] Verificando cambios locales en el proyecto...
 echo.
 git status -s
 echo.
@@ -30,35 +30,23 @@ git add -A
 
 echo.
 echo [3/4] Creando commit: "%COMMIT_MSG%"...
-git commit -m "%COMMIT_MSG%"
+git commit -m "%COMMIT_MSG%" > nul 2>&1
 
 echo.
-echo [4/4] Subiendo cambios a GitHub (repositorio: Proyecto_moto)...
-git push -u origin master
+echo [4/4] Sincronizando con GitHub (rama main)...
+git push origin main
 
 if %ERRORLEVEL% EQU 0 (
     echo.
     echo ======================================================================
-    echo   [EXITO] Cambios subidos correctamente a GitHub!
+    echo   [EXITO] Proyecto sincronizado correctamente con GitHub!
     echo   Repositorio: https://github.com/kinyo243/Proyecto_moto
     echo ======================================================================
 ) else (
     echo.
     echo ======================================================================
-    echo   [AVISO] Hubo un detalle al subir con 'master', intentando con 'main'...
-    git branch -M main
-    git push -u origin main
-    if %ERRORLEVEL% EQU 0 (
-        echo.
-        echo   [EXITO] Cambios subidos correctamente a la rama 'main'!
-        echo   Repositorio: https://github.com/kinyo243/Proyecto_moto
-    ) else (
-        echo.
-        echo   [ATENCION] No se pudo conectar con GitHub.
-        echo   1. Asegurate de haber creado el repositorio 'Proyecto_moto' en:
-        echo      https://github.com/new
-        echo   2. Si te solicita iniciar sesion en el navegador, autoriza el acceso.
-    )
+    echo   [AVISO] Hubo un problema al subir a GitHub.
+    echo   Verifica tu conexion a internet o tus credenciales en el navegador.
     echo ======================================================================
 )
 
