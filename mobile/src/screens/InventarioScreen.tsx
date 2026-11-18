@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
-    paddingBottom: 40,
+    paddingBottom: 90,
   },
   searchContainer: {
     marginBottom: 14,
@@ -294,3 +294,4 @@ const styles = StyleSheet.create({
     color: '#059669',
   },
 });
+

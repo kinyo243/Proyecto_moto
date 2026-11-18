@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  StatusBar,
+  TouchableOpacity,
+  Platform,
+} from 'react-native';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HeaderBCV } from './src/components/HeaderBCV';
 import { DashboardScreen } from './src/screens/DashboardScreen';
 import { CajaScreen } from './src/screens/CajaScreen';
@@ -10,7 +18,8 @@ import type { TasasBCV, ResumenCajaHoy, OrdenMovil } from './src/types';
 
 type TabType = 'dashboard' | 'caja' | 'ordenes' | 'dvi' | 'inventario';
 
-export default function App() {
+function MainAppContent() {
+  const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [tasas, setTasas] = useState<TasasBCV | null>(null);
   const [loadingTasas, setLoadingTasas] = useState(false);
@@ -88,11 +97,16 @@ export default function App() {
     cargarTasas();
   }, []);
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#0f172a" />
+  // Inset inferior seguro: protege contra la barra de botones nativa de Android y el home bar de iOS
+  const bottomPadding = Math.max(insets.bottom, Platform.OS === 'android' ? 24 : 16);
+  // Inset superior seguro: protege contra el notch o agujero de cámara
+  const topPadding = Math.max(insets.top, Platform.OS === 'android' ? (StatusBar.currentHeight || 16) : 16);
 
-      {/* Top Navbar Header con Ticker Oficial BCV Siempre Visible */}
+  return (
+    <View style={[styles.rootContainer, { paddingTop: topPadding }]}>
+      <StatusBar barStyle="light-content" backgroundColor="#0f172a" translucent />
+
+      {/* Top Header con Logo y Badge */}
       <View style={styles.topHeader}>
         <View style={styles.titleRow}>
           <Text style={styles.appTitle}>TallerMoto Pro</Text>
@@ -102,6 +116,7 @@ export default function App() {
         </View>
       </View>
 
+      {/* Ticker BCV Oficial (USD / EUR) Siempre Visible */}
       <HeaderBCV
         tasas={tasas}
         loading={loadingTasas}
@@ -137,13 +152,16 @@ export default function App() {
         )}
       </View>
 
-      {/* Barra de Navegación Inferior (Estilo Fina / Tab Bar) */}
-      <View style={styles.bottomBar}>
+      {/* Barra de Navegación Inferior con Margen Seguro (Anti-Solapamiento) */}
+      <View style={[styles.bottomBar, { paddingBottom: bottomPadding }]}>
         <TouchableOpacity
           style={styles.tabBtn}
           onPress={() => setActiveTab('dashboard')}
+          activeOpacity={0.7}
         >
-          <Text style={styles.tabIcon}>📊</Text>
+          <View style={[styles.iconWrapper, activeTab === 'dashboard' && styles.iconWrapperActive]}>
+            <Text style={styles.tabIcon}>📊</Text>
+          </View>
           <Text style={[styles.tabLabel, activeTab === 'dashboard' && styles.tabLabelActive]}>
             Inicio
           </Text>
@@ -152,8 +170,11 @@ export default function App() {
         <TouchableOpacity
           style={styles.tabBtn}
           onPress={() => setActiveTab('caja')}
+          activeOpacity={0.7}
         >
-          <Text style={styles.tabIcon}>💵</Text>
+          <View style={[styles.iconWrapper, activeTab === 'caja' && styles.iconWrapperActive]}>
+            <Text style={styles.tabIcon}>💵</Text>
+          </View>
           <Text style={[styles.tabLabel, activeTab === 'caja' && styles.tabLabelActive]}>
             Caja
           </Text>
@@ -162,8 +183,11 @@ export default function App() {
         <TouchableOpacity
           style={styles.tabBtn}
           onPress={() => setActiveTab('dvi')}
+          activeOpacity={0.7}
         >
-          <Text style={styles.tabIcon}>📸</Text>
+          <View style={[styles.iconWrapper, activeTab === 'dvi' && styles.iconWrapperActive]}>
+            <Text style={styles.tabIcon}>📸</Text>
+          </View>
           <Text style={[styles.tabLabel, activeTab === 'dvi' && styles.tabLabelActive]}>
             DVI
           </Text>
@@ -172,25 +196,36 @@ export default function App() {
         <TouchableOpacity
           style={styles.tabBtn}
           onPress={() => setActiveTab('inventario')}
+          activeOpacity={0.7}
         >
-          <Text style={styles.tabIcon}>📦</Text>
+          <View style={[styles.iconWrapper, activeTab === 'inventario' && styles.iconWrapperActive]}>
+            <Text style={styles.tabIcon}>📦</Text>
+          </View>
           <Text style={[styles.tabLabel, activeTab === 'inventario' && styles.tabLabelActive]}>
             Repuestos
           </Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
+  );
+}
+
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      <MainAppContent />
+    </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
+  rootContainer: {
     flex: 1,
     backgroundColor: '#0f172a',
   },
   topHeader: {
     paddingHorizontal: 16,
-    paddingTop: 8,
+    paddingTop: 4,
     paddingBottom: 4,
     backgroundColor: '#0f172a',
   },
@@ -227,16 +262,29 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderTopWidth: 1,
     borderTopColor: '#e2e8f0',
-    paddingVertical: 8,
-    paddingBottom: 14,
+    paddingTop: 8,
     justifyContent: 'space-around',
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 8,
   },
   tabBtn: {
     alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 64,
+  },
+  iconWrapper: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 16,
+    marginBottom: 2,
+  },
+  iconWrapperActive: {
+    backgroundColor: '#eff6ff',
   },
   tabIcon: {
     fontSize: 20,
-    marginBottom: 2,
   },
   tabLabel: {
     fontSize: 11,

@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
-    paddingBottom: 40,
+    paddingBottom: 90,
   },
   cajaHeaderCard: {
     backgroundColor: '#ffffff',
@@ -332,3 +332,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+

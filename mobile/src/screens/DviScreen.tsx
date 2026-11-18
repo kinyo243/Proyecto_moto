@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
-    paddingBottom: 40,
+    paddingBottom: 90,
   },
   headerCard: {
     backgroundColor: '#ffffff',
@@ -231,3 +231,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+

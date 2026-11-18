@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
-    paddingBottom: 40,
+    paddingBottom: 90,
   },
   finaCard: {
     backgroundColor: '#ffffff',
@@ -350,3 +350,4 @@ const styles = StyleSheet.create({
     color: '#0f172a',
   },
 });
+
