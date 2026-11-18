@@ -41,3 +41,4 @@ def test_historial_clinico_vehiculo_por_placa(client):
     assert data["cliente"]["nombre"] == "Ana Morales"
     assert len(data["ordenes_reparacion"]) >= 1
     assert data["ordenes_reparacion"][0]["notas_recepcion"] == "Primer servicio de 1000 km"
+
