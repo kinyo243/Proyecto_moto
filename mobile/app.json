@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "TallerMoto Pro",
+    "slug": "tallermoto-pro",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#1e3a8a",
+      "resizeMode": "contain"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tallermoto.pro"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#1e3a8a"
+      },
+      "package": "com.tallermoto.pro"
+    },
+    "extra": {
+      "apiUrl": "http://10.0.2.2:8000/api/v1",
+      "apiBaseLocal": "http://localhost:8000/api/v1"
+    }
+  }
+}
