@@ -1,7 +1,13 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import clientes, vehiculos, ordenes, bahias, camaras, dvi, presupuestos, auth
+from app.api.v1.endpoints import clientes, vehiculos, ordenes, bahias, camaras, dvi, presupuestos, auth, bcv
 
 api_router = APIRouter()
+
+api_router.include_router(
+    bcv.router,
+    prefix="/bcv",
+    tags=["Tasas de Cambio Oficiales (BCV)"],
+)
 
 api_router.include_router(
     auth.router,
