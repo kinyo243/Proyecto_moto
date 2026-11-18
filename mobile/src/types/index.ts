@@ -64,3 +64,4 @@ export interface ItemDviMovil {
   foto_url?: string;
   observaciones?: string;
 }
+

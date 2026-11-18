@@ -109,9 +109,15 @@ function MainAppContent() {
       {/* Top Header con Logo y Badge */}
       <View style={styles.topHeader}>
         <View style={styles.titleRow}>
-          <Text style={styles.appTitle}>TallerMoto Pro</Text>
-          <View style={styles.partnerBadge}>
-            <Text style={styles.partnerBadgeText}>FINA ENGINE</Text>
+          <View style={styles.brandGroup}>
+            <Text style={styles.brandIcon}>🏍️</Text>
+            <View>
+              <Text style={styles.appTitle}>TallerMoto Pro</Text>
+              <Text style={styles.appSubtitle}>Sistema de Gestión y Control</Text>
+            </View>
+          </View>
+          <View style={styles.proBadge}>
+            <Text style={styles.proBadgeText}>PRO V1.0</Text>
           </View>
         </View>
       </View>
@@ -234,24 +240,38 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  brandGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  brandIcon: {
+    fontSize: 22,
+  },
   appTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '900',
     color: '#ffffff',
-    letterSpacing: -0.5,
+    letterSpacing: -0.3,
   },
-  partnerBadge: {
-    backgroundColor: '#1e293b',
+  appSubtitle: {
+    fontSize: 10,
+    color: '#94a3b8',
+    fontWeight: '500',
+  },
+  proBadge: {
+    backgroundColor: 'rgba(37, 99, 235, 0.2)',
     borderWidth: 1,
     borderColor: '#3b82f6',
     paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingVertical: 3,
     borderRadius: 8,
   },
-  partnerBadgeText: {
+  proBadgeText: {
     color: '#60a5fa',
-    fontSize: 9,
-    fontWeight: 'bold',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
   mainContent: {
     flex: 1,

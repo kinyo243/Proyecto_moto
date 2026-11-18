@@ -16,30 +16,41 @@ export const HeaderBCV: React.FC<HeaderBCVProps> = ({ tasas, loading, onRefresh 
 
   return (
     <View style={styles.container}>
+      {/* Badge Oficial */}
       <View style={styles.badgeBCV}>
-        <Text style={styles.badgeText}>BCV OFICIAL</Text>
+        <Text style={styles.badgeDot}>●</Text>
+        <Text style={styles.badgeText}>BCV</Text>
       </View>
 
-      <View style={styles.rateGroup}>
-        <View style={styles.rateItem}>
-          <Text style={styles.currencyLabelUsd}>$ USD</Text>
-          <Text style={styles.rateValueUsd}>
-            {loading && !tasas ? '...' : `Bs. ${formatBs(tasas?.usd)}`}
+      {/* Chips de Tasas */}
+      <View style={styles.ratesWrapper}>
+        {/* Dólar */}
+        <View style={styles.rateChipUsd}>
+          <Text style={styles.currencySymbolUsd}>$</Text>
+          <Text style={styles.rateValue}>
+            {loading && !tasas ? '...' : formatBs(tasas?.usd)}
           </Text>
         </View>
 
-        <Text style={styles.separator}>|</Text>
-
-        <View style={styles.rateItem}>
-          <Text style={styles.currencyLabelEur}>€ EUR</Text>
-          <Text style={styles.rateValueEur}>
-            {loading && !tasas ? '...' : `Bs. ${formatBs(tasas?.eur)}`}
+        {/* Euro */}
+        <View style={styles.rateChipEur}>
+          <Text style={styles.currencySymbolEur}>€</Text>
+          <Text style={styles.rateValue}>
+            {loading && !tasas ? '...' : formatBs(tasas?.eur)}
           </Text>
         </View>
       </View>
 
-      <TouchableOpacity onPress={onRefresh} style={styles.refreshButton}>
-        <Text style={styles.refreshText}>{loading ? '⏳' : '🔄'}</Text>
+      {/* Botón Refresco */}
+      <TouchableOpacity
+        onPress={onRefresh}
+        style={styles.refreshBtn}
+        disabled={loading}
+        activeOpacity={0.7}
+      >
+        <Text style={[styles.refreshIcon, loading && styles.spinning]}>
+          {loading ? '⏳' : '🔄'}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -50,71 +61,92 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#0f172a',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 12,
-    marginHorizontal: 16,
-    marginVertical: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  badgeBCV: {
     backgroundColor: '#1e293b',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
     borderWidth: 1,
     borderColor: '#334155',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 14,
+    marginHorizontal: 16,
+    marginVertical: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 4,
   },
-  badgeText: {
-    color: '#94a3b8',
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  },
-  rateGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  rateItem: {
+  badgeBCV: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+    backgroundColor: '#0f172a',
+    paddingHorizontal: 7,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#475569',
   },
-  currencyLabelUsd: {
+  badgeDot: {
+    color: '#10b981',
+    fontSize: 8,
+  },
+  badgeText: {
+    color: '#f8fafc',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  ratesWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  rateChipUsd: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(16, 185, 129, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.3)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    gap: 4,
+  },
+  currencySymbolUsd: {
     color: '#34d399',
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: '900',
   },
-  rateValueUsd: {
-    color: '#ffffff',
-    fontSize: 12,
-    fontWeight: 'bold',
-    fontVariant: ['tabular-nums'],
+  rateChipEur: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(59, 130, 246, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(59, 130, 246, 0.3)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    gap: 4,
   },
-  separator: {
-    color: '#475569',
-    fontSize: 12,
-  },
-  currencyLabelEur: {
+  currencySymbolEur: {
     color: '#60a5fa',
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: '900',
   },
-  rateValueEur: {
+  rateValue: {
     color: '#ffffff',
     fontSize: 12,
     fontWeight: 'bold',
     fontVariant: ['tabular-nums'],
   },
-  refreshButton: {
+  refreshBtn: {
     padding: 4,
+    borderRadius: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
-  refreshText: {
-    fontSize: 14,
+  refreshIcon: {
+    fontSize: 13,
+  },
+  spinning: {
+    opacity: 0.5,
   },
 });

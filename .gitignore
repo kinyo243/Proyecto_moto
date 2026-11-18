@@ -30,3 +30,20 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
+# Databases & local storage
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads & local media assets
+uploads/
+!uploads/.gitkeep
+
+# Node & Frontend / Mobile artifacts
+node_modules/
+dist/
+.expo/
+web-build/
+*.log
+
+

@@ -6,6 +6,8 @@ interface InventarioScreenProps {
   tasas: TasasBCV | null;
 }
 
+const CATEGORIAS = ['Todos', 'Frenos', 'Fluidos', 'Transmisión', 'Motor'];
+
 const MOCK_REPUESTOS: RepuestoInventario[] = [
   {
     id: 1,
@@ -62,34 +64,62 @@ const MOCK_REPUESTOS: RepuestoInventario[] = [
 
 export const InventarioScreen: React.FC<InventarioScreenProps> = ({ tasas }) => {
   const [busqueda, setBusqueda] = useState('');
+  const [catActiva, setCatActiva] = useState('Todos');
   const tasaBcv = tasas?.usd || 916.65;
 
-  const repuestosFiltrados = MOCK_REPUESTOS.filter((r) =>
-    r.descripcion.toLowerCase().includes(busqueda.toLowerCase()) ||
-    r.codigo_parte.toLowerCase().includes(busqueda.toLowerCase()) ||
-    r.categoria.toLowerCase().includes(busqueda.toLowerCase())
-  );
+  const repuestosFiltrados = MOCK_REPUESTOS.filter((r) => {
+    const matchCat = catActiva === 'Todos' || r.categoria.toLowerCase() === catActiva.toLowerCase();
+    const matchTexto =
+      r.descripcion.toLowerCase().includes(busqueda.toLowerCase()) ||
+      r.codigo_parte.toLowerCase().includes(busqueda.toLowerCase()) ||
+      r.ubicacion_pasillo.toLowerCase().includes(busqueda.toLowerCase());
+    return matchCat && matchTexto;
+  });
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Buscador de repuestos */}
-      <View style={styles.searchContainer}>
+      <View style={styles.searchBox}>
+        <Text style={styles.searchIcon}>🔍</Text>
         <TextInput
           style={styles.searchInput}
-          placeholder="🔍 Buscar código, repuesto o pasillo..."
+          placeholder="Buscar repuesto, código o pasillo..."
           placeholderTextColor="#94a3b8"
           value={busqueda}
           onChangeText={setBusqueda}
         />
+        {busqueda.length > 0 && (
+          <TouchableOpacity onPress={() => setBusqueda('')}>
+            <Text style={styles.clearBtn}>✕</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
-      <Text style={styles.sectionTitle}>
-        CATÁLOGO CON UBICACIÓN EN TALLER ({repuestosFiltrados.length})
-      </Text>
+      {/* Filtros de Categoría */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.catScroll}>
+        {CATEGORIAS.map((cat) => (
+          <TouchableOpacity
+            key={cat}
+            style={[styles.catChip, catActiva === cat && styles.catChipActive]}
+            onPress={() => setCatActiva(cat)}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.catChipText, catActiva === cat && styles.catChipTextActive]}>
+              {cat}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
+      <View style={styles.headerRow}>
+        <Text style={styles.sectionTitle}>CATÁLOGO CON UBICACIÓN EN TALLER</Text>
+        <Text style={styles.resultsCount}>{repuestosFiltrados.length} piezas</Text>
+      </View>
 
       {repuestosFiltrados.map((rep) => {
         const esBajoStock = rep.stock_actual <= rep.stock_minimo;
         const precioBs = rep.precio_venta_usd * tasaBcv;
+        const margen = (((rep.precio_venta_usd - rep.costo_usd) / rep.costo_usd) * 100).toFixed(0);
 
         return (
           <View key={rep.id} style={styles.card}>
@@ -99,26 +129,28 @@ export const InventarioScreen: React.FC<InventarioScreenProps> = ({ tasas }) => 
               </View>
               <View style={[styles.stockBadge, esBajoStock ? styles.stockBajo : styles.stockOk]}>
                 <Text style={[styles.stockText, esBajoStock ? styles.stockTextBajo : styles.stockTextOk]}>
-                  {esBajoStock ? '⚠️ STOCK BAJO' : 'DISPONIBLE'}: {rep.stock_actual} uds
+                  {esBajoStock ? '⚠️ STOCK MÍNIMO' : 'DISPONIBLE'}: {rep.stock_actual} uds
                 </Text>
               </View>
             </View>
 
             <Text style={styles.nombre}>{rep.descripcion}</Text>
 
-            {/* Ubicación exacta estilo Fina */}
+            {/* Ubicación física exacta en el taller */}
             <View style={styles.locationContainer}>
-              <Text style={styles.locationIcon}>📍</Text>
-              <Text style={styles.locationLabel}>Ubicación:</Text>
-              <Text style={styles.locationValue}>
-                {rep.ubicacion_pasillo} • {rep.ubicacion_estante} {rep.ubicacion_gaveta ? `• ${rep.ubicacion_gaveta}` : ''}
-              </Text>
+              <Text style={styles.locationPin}>📍</Text>
+              <View style={styles.locationTextGroup}>
+                <Text style={styles.locationLabel}>Ubicación:</Text>
+                <Text style={styles.locationValue}>
+                  {rep.ubicacion_pasillo} • {rep.ubicacion_estante} {rep.ubicacion_gaveta ? `• ${rep.ubicacion_gaveta}` : ''}
+                </Text>
+              </View>
             </View>
 
             {/* Precios Multimoneda */}
             <View style={styles.footerPrices}>
               <View>
-                <Text style={styles.priceSub}>Precio al Público:</Text>
+                <Text style={styles.priceSub}>Precio al Público</Text>
                 <Text style={styles.priceUsd}>${rep.precio_venta_usd.toFixed(2)} USD</Text>
                 <Text style={styles.priceBs}>
                   ≈ Bs. {precioBs.toLocaleString('es-VE', { minimumFractionDigits: 2 })}
@@ -126,11 +158,10 @@ export const InventarioScreen: React.FC<InventarioScreenProps> = ({ tasas }) => 
               </View>
 
               <View style={styles.costoBox}>
-                <Text style={styles.costoLabel}>Costo / Margen</Text>
-                <Text style={styles.costoVal}>${rep.costo_usd.toFixed(2)}</Text>
-                <Text style={styles.margenText}>
-                  +{(((rep.precio_venta_usd - rep.costo_usd) / rep.costo_usd) * 100).toFixed(0)}% margen
-                </Text>
+                <Text style={styles.costoLabel}>Costo: ${rep.costo_usd.toFixed(2)}</Text>
+                <View style={styles.margenPill}>
+                  <Text style={styles.margenText}>+{margen}% Margen</Text>
+                </View>
               </View>
             </View>
           </View>
@@ -147,38 +178,85 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
-    paddingBottom: 90,
+    paddingBottom: 95,
   },
-  searchContainer: {
-    marginBottom: 14,
+  searchBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderWidth: 1.5,
+    borderColor: '#e2e8f0',
+    borderRadius: 14,
+    paddingHorizontal: 12,
+    marginBottom: 12,
+  },
+  searchIcon: {
+    fontSize: 16,
+    marginRight: 6,
   },
   searchInput: {
+    flex: 1,
+    paddingVertical: 10,
+    fontSize: 13,
+    color: '#0f172a',
+  },
+  clearBtn: {
+    color: '#94a3b8',
+    fontSize: 16,
+    padding: 4,
+  },
+  catScroll: {
+    marginBottom: 14,
+  },
+  catChip: {
     backgroundColor: '#ffffff',
     borderWidth: 1,
-    borderColor: '#cbd5e1',
-    borderRadius: 12,
+    borderColor: '#e2e8f0',
     paddingHorizontal: 14,
-    paddingVertical: 10,
-    fontSize: 14,
-    color: '#0f172a',
+    paddingVertical: 7,
+    borderRadius: 20,
+    marginRight: 8,
+  },
+  catChipActive: {
+    backgroundColor: '#2563eb',
+    borderColor: '#2563eb',
+  },
+  catChipText: {
+    fontSize: 12,
+    color: '#64748b',
+    fontWeight: '600',
+  },
+  catChipTextActive: {
+    color: '#ffffff',
+    fontWeight: '700',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
   },
   sectionTitle: {
     fontSize: 11,
     fontWeight: '800',
     color: '#64748b',
-    marginBottom: 10,
     letterSpacing: 0.5,
+  },
+  resultsCount: {
+    fontSize: 11,
+    color: '#94a3b8',
+    fontWeight: '600',
   },
   card: {
     backgroundColor: '#ffffff',
-    borderRadius: 14,
+    borderRadius: 16,
     padding: 14,
     borderWidth: 1,
     borderColor: '#e2e8f0',
     marginBottom: 12,
     shadowColor: '#000',
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
+    shadowOpacity: 0.03,
+    shadowRadius: 5,
     elevation: 2,
   },
   cardHeader: {
@@ -195,13 +273,13 @@ const styles = StyleSheet.create({
   },
   codeText: {
     fontSize: 10,
-    fontWeight: 'bold',
+    fontWeight: '800',
     color: '#475569',
   },
   stockBadge: {
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 6,
+    borderRadius: 8,
   },
   stockOk: {
     backgroundColor: '#ecfdf5',
@@ -211,7 +289,7 @@ const styles = StyleSheet.create({
   },
   stockText: {
     fontSize: 10,
-    fontWeight: 'bold',
+    fontWeight: '800',
   },
   stockTextOk: {
     color: '#059669',
@@ -230,27 +308,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#f8fafc',
     paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
+    paddingVertical: 8,
+    borderRadius: 10,
     marginVertical: 8,
     borderWidth: 1,
     borderColor: '#f1f5f9',
   },
-  locationIcon: {
-    fontSize: 13,
-    marginRight: 4,
+  locationPin: {
+    fontSize: 14,
+    marginRight: 6,
+  },
+  locationTextGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 4,
   },
   locationLabel: {
     fontSize: 11,
     fontWeight: '600',
     color: '#64748b',
-    marginRight: 6,
   },
   locationValue: {
     fontSize: 11,
-    fontWeight: 'bold',
+    fontWeight: '800',
     color: '#1e293b',
-    flex: 1,
   },
   footerPrices: {
     flexDirection: 'row',
@@ -258,40 +340,40 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: '#f1f5f9',
-    paddingTop: 8,
-    marginTop: 4,
+    paddingTop: 10,
   },
   priceSub: {
-    fontSize: 10,
+    fontSize: 9,
     color: '#64748b',
+    textTransform: 'uppercase',
   },
   priceUsd: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '900',
     color: '#0f172a',
   },
   priceBs: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#10b981',
+    color: '#059669',
   },
   costoBox: {
     alignItems: 'flex-end',
   },
   costoLabel: {
-    fontSize: 9,
+    fontSize: 10,
     color: '#94a3b8',
-    textTransform: 'uppercase',
+    marginBottom: 2,
   },
-  costoVal: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#64748b',
+  margenPill: {
+    backgroundColor: '#ecfdf5',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
   },
   margenText: {
     fontSize: 10,
-    fontWeight: 'bold',
+    fontWeight: '800',
     color: '#059669',
   },
 });
-

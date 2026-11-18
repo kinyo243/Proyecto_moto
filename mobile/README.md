@@ -59,3 +59,4 @@ Aplicación móvil orientada a talleres mecánicos de motocicletas y venta de re
 
 5. **Para probar en el navegador web:**
    - Presiona la tecla `w` en la consola.
+

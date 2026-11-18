@@ -7,3 +7,4 @@ export const getTasasBCVMovil = async (forceRefresh = false): Promise<TasasBCV> 
   });
   return res.data;
 };
+
