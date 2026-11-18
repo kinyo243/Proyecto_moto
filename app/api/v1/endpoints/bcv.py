@@ -42,3 +42,4 @@ def get_tasas_bcv(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail=f"No se pudo consultar el portal del BCV: {str(exc)}",
         )
+

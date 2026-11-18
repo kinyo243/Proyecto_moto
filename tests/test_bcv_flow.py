@@ -7,3 +7,4 @@ def test_endpoint_tasas_bcv(client):
     assert data["usd"] > 0
     assert data["eur"] > 0
     assert "Banco Central de Venezuela" in data["fuente"]
+

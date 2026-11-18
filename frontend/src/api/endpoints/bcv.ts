@@ -16,3 +16,4 @@ export const getTasasBCV = (forceRefresh = false) =>
   apiClient.get<TasasBCV>('/bcv/tasas', {
     params: { force_refresh: forceRefresh },
   });
+

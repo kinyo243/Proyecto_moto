@@ -103,3 +103,4 @@ def fetch_tasas_bcv(force_refresh: bool = False) -> Dict[str, Any]:
                 "aviso": f"Usando última tasa conocida tras fallo de conexión: {str(exc)}",
             }
         raise exc
+
