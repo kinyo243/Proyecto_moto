@@ -61,7 +61,7 @@ export default function DigitalSignaturePad({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden space-y-4">
+    <div className="card overflow-hidden space-y-4">
       {/* Header */}
       <div className="bg-slate-50/80 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
         <div className="flex items-center gap-2.5">

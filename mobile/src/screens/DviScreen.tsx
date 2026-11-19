@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import type { ItemDviMovil } from '../types';
+import {
+  card,
+  colors,
+  primaryButton,
+  primaryButtonText,
+  radius,
+  spacing,
+  touch,
+  type,
+} from '../theme';
 
 const ITEMS_INICIALES: ItemDviMovil[] = [
   { id: 1, categoria: 'Frenos', nombre: 'Pastillas y Discos Delanteros', estado: 'sin_evaluar' },
@@ -11,6 +21,35 @@ const ITEMS_INICIALES: ItemDviMovil[] = [
   { id: 6, categoria: 'Transmisión', nombre: 'Tensión y Lubricación de Cadena', estado: 'sin_evaluar' },
   { id: 7, categoria: 'Suspensión', nombre: 'Retenes y Barras Delanteras', estado: 'sin_evaluar' },
 ];
+
+type Semaforo = 'verde' | 'amarillo' | 'rojo';
+
+/** Tonos del semáforo DVI según los colores semánticos del sistema. */
+const SEMAFORO: Record<Semaforo, { label: string; color: string; bg: string; border: string; text: string }> = {
+  verde: {
+    label: 'Bueno',
+    color: colors.success,
+    bg: colors.successSoft,
+    border: colors.successBorder,
+    text: colors.successText,
+  },
+  amarillo: {
+    label: 'Atención',
+    color: colors.warning,
+    bg: colors.warningSoft,
+    border: colors.warningBorder,
+    text: colors.warningText,
+  },
+  rojo: {
+    label: 'Crítico',
+    color: colors.danger,
+    bg: colors.dangerSoft,
+    border: colors.dangerBorder,
+    text: colors.dangerText,
+  },
+};
+
+const SEMAFORO_ORDEN: Semaforo[] = ['verde', 'amarillo', 'rojo'];
 
 export const DviScreen: React.FC = () => {
   const [items, setItems] = useState<ItemDviMovil[]>(ITEMS_INICIALES);
@@ -33,12 +72,20 @@ export const DviScreen: React.FC = () => {
     setTimeout(() => setGuardadoExito(false), 3000);
   };
 
+  const resumen: { key: Semaforo; total: number; label: string }[] = [
+    { key: 'verde', total: totalVerde, label: 'Óptimo' },
+    { key: 'amarillo', total: totalAmarillo, label: 'Atención' },
+    { key: 'rojo', total: totalRojo, label: 'Urgente' },
+  ];
+
+  const progreso = items.length > 0 ? evaluados / items.length : 0;
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Resumen Superior de Inspección */}
-      <View style={styles.headerCard}>
+      <View style={[card, styles.headerCard]}>
         <View style={styles.topRow}>
-          <Text style={styles.headerLabel}>INSPECCIÓN DIGITAL EN BAHÍA</Text>
+          <Text style={styles.headerLabel}>Inspección digital en bahía</Text>
           <View style={styles.progressBadge}>
             <Text style={styles.progressText}>{evaluados}/{items.length} evaluados</Text>
           </View>
@@ -46,81 +93,84 @@ export const DviScreen: React.FC = () => {
 
         <Text style={styles.ordenTitle}>{ordenSeleccionada}</Text>
 
+        <View style={styles.progressTrack}>
+          <View style={[styles.progressFill, { width: `${progreso * 100}%` }]} />
+        </View>
+
         <View style={styles.semaforoSummary}>
-          <View style={[styles.summaryPill, { backgroundColor: '#ecfdf5', borderColor: '#a7f3d0' }]}>
-            <Text style={styles.textVerde}>🟢 {totalVerde} Óptimo</Text>
-          </View>
-          <View style={[styles.summaryPill, { backgroundColor: '#fefce8', borderColor: '#fef08a' }]}>
-            <Text style={styles.textAmarillo}>🟡 {totalAmarillo} Atención</Text>
-          </View>
-          <View style={[styles.summaryPill, { backgroundColor: '#fef2f2', borderColor: '#fecaca' }]}>
-            <Text style={styles.textRojo}>🔴 {totalRojo} Urgente</Text>
-          </View>
+          {resumen.map((r) => {
+            const tone = SEMAFORO[r.key];
+            return (
+              <View key={r.key} style={[styles.summaryPill, { backgroundColor: tone.bg, borderColor: tone.border }]}>
+                <Text style={[styles.summaryNumber, { color: tone.color }]}>{r.total}</Text>
+                <Text style={[styles.summaryLabel, { color: tone.text }]}>{r.label}</Text>
+              </View>
+            );
+          })}
         </View>
       </View>
 
-      <Text style={styles.sectionTitle}>CHECKLIST DE REVISIÓN TÉCNICA</Text>
+      <Text style={styles.sectionTitle}>Checklist de revisión técnica</Text>
 
       {items.map((item) => (
-        <View key={item.id} style={styles.itemCard}>
+        <View key={item.id} style={[card, styles.itemCard]}>
           <View style={styles.itemHeader}>
-            <Text style={styles.itemCat}>{item.categoria.toUpperCase()}</Text>
-            <Text style={styles.itemName}>{item.nombre}</Text>
+            <View style={styles.itemHeaderText}>
+              <Text style={styles.itemCat}>{item.categoria}</Text>
+              <Text style={styles.itemName}>{item.nombre}</Text>
+            </View>
+            {item.estado !== 'sin_evaluar' && (
+              <View style={[styles.itemStatusDot, { backgroundColor: SEMAFORO[item.estado].color }]} />
+            )}
           </View>
 
           {/* Botones de semáforo interactivo */}
           <View style={styles.semaforoRow}>
-            <TouchableOpacity
-              style={[styles.btnSemaforo, item.estado === 'verde' && styles.btnVerdeActive]}
-              onPress={() => cambiarEstado(item.id, 'verde')}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.semaforoText, item.estado === 'verde' && styles.textBold]}>
-                🟢 BUENO
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.btnSemaforo, item.estado === 'amarillo' && styles.btnAmarilloActive]}
-              onPress={() => cambiarEstado(item.id, 'amarillo')}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.semaforoText, item.estado === 'amarillo' && styles.textBold]}>
-                🟡 ATENCIÓN
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.btnSemaforo, item.estado === 'rojo' && styles.btnRojoActive]}
-              onPress={() => cambiarEstado(item.id, 'rojo')}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.semaforoText, item.estado === 'rojo' && styles.textBold]}>
-                🔴 CRÍTICO
-              </Text>
-            </TouchableOpacity>
+            {SEMAFORO_ORDEN.map((key) => {
+              const tone = SEMAFORO[key];
+              const active = item.estado === key;
+              return (
+                <TouchableOpacity
+                  key={key}
+                  style={[
+                    styles.btnSemaforo,
+                    active && { backgroundColor: tone.bg, borderColor: tone.color },
+                  ]}
+                  onPress={() => cambiarEstado(item.id, key)}
+                  activeOpacity={0.7}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: active }}
+                >
+                  <View style={[styles.semaforoDot, { backgroundColor: tone.color }]} />
+                  <Text style={[styles.semaforoText, active && { color: tone.text, fontWeight: '700' }]}>
+                    {tone.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
 
           {/* Botón de Captura de Foto con Cámara */}
-          <TouchableOpacity style={styles.fotoBtn} activeOpacity={0.7}>
+          <TouchableOpacity style={styles.fotoBtn} activeOpacity={0.7} accessibilityRole="button">
             <Text style={styles.fotoIcon}>📸</Text>
-            <Text style={styles.fotoText}>Adjuntar Foto de Evidencia</Text>
+            <Text style={styles.fotoText}>Adjuntar foto de evidencia</Text>
           </TouchableOpacity>
         </View>
       ))}
 
       {guardadoExito && (
         <View style={styles.exitoPill}>
-          <Text style={styles.exitoText}>✅ ¡Inspección guardada y lista para PDF/WhatsApp!</Text>
+          <Text style={styles.exitoText}>✓ ¡Inspección guardada y lista para PDF/WhatsApp!</Text>
         </View>
       )}
 
       <TouchableOpacity
-        style={styles.btnGuardarDvi}
+        style={primaryButton}
         onPress={handleGuardar}
-        activeOpacity={0.8}
+        activeOpacity={0.85}
+        accessibilityRole="button"
       >
-        <Text style={styles.btnGuardarText}>Finalizar y Compartir Diagnóstico</Text>
+        <Text style={primaryButtonText}>Finalizar y Compartir Diagnóstico</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -129,193 +179,168 @@ export const DviScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: colors.canvas,
   },
   content: {
-    padding: 16,
-    paddingBottom: 95,
+    padding: spacing.gutter,
+    paddingBottom: spacing.xxxl,
   },
   headerCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
+    marginBottom: spacing.xxl,
   },
   topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    gap: spacing.sm,
   },
   headerLabel: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: '#64748b',
-    letterSpacing: 0.5,
+    ...type.label,
+    flexShrink: 1,
   },
   progressBadge: {
-    backgroundColor: '#f1f5f9',
-    paddingHorizontal: 8,
+    backgroundColor: colors.slate100,
+    paddingHorizontal: 10,
     paddingVertical: 3,
-    borderRadius: 8,
+    borderRadius: radius.pill,
   },
   progressText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: '#475569',
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.slate600,
+    ...type.tabular,
   },
   ordenTitle: {
-    fontSize: 16,
-    fontWeight: '900',
-    color: '#0f172a',
-    marginVertical: 6,
+    fontSize: 17,
+    fontWeight: '700',
+    color: colors.text,
+    marginTop: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  progressTrack: {
+    height: 6,
+    borderRadius: radius.pill,
+    backgroundColor: colors.slate100,
+    overflow: 'hidden',
+    marginBottom: spacing.lg,
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: radius.pill,
+    backgroundColor: colors.primary,
   },
   semaforoSummary: {
     flexDirection: 'row',
-    gap: 8,
-    marginTop: 6,
+    gap: spacing.sm,
   },
   summaryPill: {
     flex: 1,
-    paddingVertical: 6,
-    borderRadius: 8,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.sm,
     alignItems: 'center',
     borderWidth: 1,
   },
-  textVerde: {
-    color: '#059669',
-    fontWeight: '800',
-    fontSize: 11,
+  summaryNumber: {
+    fontSize: 20,
+    fontWeight: '700',
+    ...type.tabular,
   },
-  textAmarillo: {
-    color: '#ca8a04',
-    fontWeight: '800',
+  summaryLabel: {
     fontSize: 11,
-  },
-  textRojo: {
-    color: '#dc2626',
-    fontWeight: '800',
-    fontSize: 11,
+    fontWeight: '600',
+    marginTop: 1,
   },
   sectionTitle: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: '#64748b',
-    marginBottom: 10,
-    letterSpacing: 0.5,
+    ...type.label,
+    marginBottom: spacing.md,
   },
   itemCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 14,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.03,
-    shadowRadius: 4,
-    elevation: 2,
+    marginBottom: spacing.md,
   },
   itemHeader: {
-    marginBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: spacing.md,
+  },
+  itemHeaderText: {
+    flex: 1,
+  },
+  itemStatusDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginTop: 4,
   },
   itemCat: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: '#94a3b8',
-    letterSpacing: 0.4,
+    ...type.label,
+    fontSize: 10,
+    color: colors.textTertiary,
   },
   itemName: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#1e293b',
+    ...type.section,
     marginTop: 2,
   },
   semaforoRow: {
     flexDirection: 'row',
-    gap: 6,
-    marginBottom: 10,
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
   },
   btnSemaforo: {
     flex: 1,
-    paddingVertical: 9,
-    borderRadius: 10,
+    flexDirection: 'row',
+    minHeight: touch.min,
+    borderRadius: radius.sm,
     alignItems: 'center',
-    backgroundColor: '#f8fafc',
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
+    justifyContent: 'center',
+    gap: 6,
+    backgroundColor: colors.surface,
+    borderWidth: 1.5,
+    borderColor: colors.border,
   },
-  btnVerdeActive: {
-    backgroundColor: '#dcfce7',
-    borderColor: '#22c55e',
-  },
-  btnAmarilloActive: {
-    backgroundColor: '#fef9c3',
-    borderColor: '#eab308',
-  },
-  btnRojoActive: {
-    backgroundColor: '#fee2e2',
-    borderColor: '#ef4444',
+  semaforoDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   semaforoText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: '#475569',
-  },
-  textBold: {
-    fontWeight: '900',
-    color: '#0f172a',
+    fontSize: 13,
+    fontWeight: '500',
+    color: colors.slate600,
   },
   fotoBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 9,
-    borderRadius: 10,
-    backgroundColor: '#f8fafc',
+    minHeight: touch.min,
+    borderRadius: radius.sm,
+    backgroundColor: colors.slate50,
     borderWidth: 1.5,
-    borderColor: '#cbd5e1',
+    borderColor: colors.slate300,
     borderStyle: 'dashed',
-    gap: 6,
+    gap: spacing.sm,
   },
   fotoIcon: {
     fontSize: 14,
   },
   fotoText: {
-    fontSize: 12,
-    color: '#475569',
-    fontWeight: '600',
+    fontSize: 13,
+    color: colors.slate600,
+    fontWeight: '500',
   },
   exitoPill: {
-    backgroundColor: '#dcfce7',
-    padding: 12,
-    borderRadius: 10,
-    marginBottom: 12,
+    backgroundColor: colors.successSoft,
+    borderWidth: 1,
+    borderColor: colors.successBorder,
+    padding: spacing.md,
+    borderRadius: radius.sm,
+    marginTop: spacing.sm,
+    marginBottom: spacing.md,
     alignItems: 'center',
   },
   exitoText: {
-    color: '#15803d',
-    fontWeight: 'bold',
-    fontSize: 12,
-  },
-  btnGuardarDvi: {
-    backgroundColor: '#2563eb',
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-    shadowColor: '#2563eb',
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  btnGuardarText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '800',
+    color: colors.successText,
+    fontWeight: '600',
+    fontSize: 13,
   },
 });

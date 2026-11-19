@@ -6,7 +6,8 @@ echo           TALLERMOTO PRO - VERSION MOVIL (ESTILO FINA)
 echo ======================================================================
 echo.
 
-set "ROOT_DIR=d:\Personal - Laptop\Proyecto_moto"
+set "ROOT_DIR=%~dp0"
+if "%ROOT_DIR:~-1%"=="\" set "ROOT_DIR=%ROOT_DIR:~0,-1%"
 cd /d "%ROOT_DIR%\mobile"
 
 echo Como deseas iniciar la version movil?

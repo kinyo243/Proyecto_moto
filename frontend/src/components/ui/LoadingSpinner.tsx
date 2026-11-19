@@ -1,28 +1,12 @@
-export default function LoadingSpinner({ size = 24 }: { size?: number }) {
+export default function LoadingSpinner({ size = 24, label }: { size?: number; label?: string }) {
   return (
-    <div className="flex items-center justify-center p-8">
-      <svg
-        className="animate-spin text-indigo-600"
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-      >
-        <circle
-          className="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          strokeWidth="4"
-        />
-        <path
-          className="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-        />
-      </svg>
+    <div className="flex flex-col items-center justify-center gap-3 p-8" role="status">
+      <span
+        className="inline-block animate-spin rounded-full border-[3px] border-brand-100 border-t-brand-600"
+        style={{ width: size, height: size }}
+      />
+      {label && <span className="text-xs font-medium text-slate-500">{label}</span>}
+      <span className="sr-only">Cargando…</span>
     </div>
   );
 }
-

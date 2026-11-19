@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import type { TasasBCV } from '../types';
+import { colors, radius, spacing, touch, type } from '../theme';
 
 interface HeaderBCVProps {
   tasas: TasasBCV | null;
@@ -15,138 +16,133 @@ export const HeaderBCV: React.FC<HeaderBCVProps> = ({ tasas, loading, onRefresh 
   };
 
   return (
-    <View style={styles.container}>
-      {/* Badge Oficial */}
-      <View style={styles.badgeBCV}>
-        <Text style={styles.badgeDot}>●</Text>
-        <Text style={styles.badgeText}>BCV</Text>
-      </View>
-
-      {/* Chips de Tasas */}
-      <View style={styles.ratesWrapper}>
-        {/* Dólar */}
-        <View style={styles.rateChipUsd}>
-          <Text style={styles.currencySymbolUsd}>$</Text>
-          <Text style={styles.rateValue}>
-            {loading && !tasas ? '...' : formatBs(tasas?.usd)}
-          </Text>
+    <View style={styles.band}>
+      <View style={styles.container}>
+        {/* Badge Oficial */}
+        <View style={styles.badgeBCV}>
+          <View style={styles.badgeDot} />
+          <Text style={styles.badgeText}>BCV</Text>
         </View>
 
-        {/* Euro */}
-        <View style={styles.rateChipEur}>
-          <Text style={styles.currencySymbolEur}>€</Text>
-          <Text style={styles.rateValue}>
-            {loading && !tasas ? '...' : formatBs(tasas?.eur)}
-          </Text>
-        </View>
-      </View>
+        {/* Chips de Tasas */}
+        <View style={styles.ratesWrapper}>
+          {/* Dólar */}
+          <View style={styles.rateChip}>
+            <Text style={[styles.currencySymbol, { color: colors.usdOnDark }]}>USD</Text>
+            <Text style={styles.rateValue}>
+              {loading && !tasas ? '...' : formatBs(tasas?.usd)}
+            </Text>
+          </View>
 
-      {/* Botón Refresco */}
-      <TouchableOpacity
-        onPress={onRefresh}
-        style={styles.refreshBtn}
-        disabled={loading}
-        activeOpacity={0.7}
-      >
-        <Text style={[styles.refreshIcon, loading && styles.spinning]}>
-          {loading ? '⏳' : '🔄'}
-        </Text>
-      </TouchableOpacity>
+          {/* Euro */}
+          <View style={styles.rateChip}>
+            <Text style={[styles.currencySymbol, { color: colors.eurOnDark }]}>EUR</Text>
+            <Text style={styles.rateValue}>
+              {loading && !tasas ? '...' : formatBs(tasas?.eur)}
+            </Text>
+          </View>
+        </View>
+
+        {/* Botón Refresco */}
+        <TouchableOpacity
+          onPress={onRefresh}
+          style={[styles.refreshBtn, loading && styles.spinning]}
+          disabled={loading}
+          activeOpacity={0.7}
+          hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+          accessibilityRole="button"
+          accessibilityLabel="Actualizar tasas BCV"
+        >
+          {loading ? (
+            <ActivityIndicator size="small" color={colors.slate400} />
+          ) : (
+            <Text style={styles.refreshIcon}>↻</Text>
+          )}
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  band: {
+    backgroundColor: colors.ink950,
+    paddingHorizontal: spacing.gutter,
+    paddingBottom: spacing.md,
+  },
   container: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#1e293b',
+    backgroundColor: colors.ink800,
     borderWidth: 1,
-    borderColor: '#334155',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 14,
-    marginHorizontal: 16,
-    marginVertical: 6,
-    shadowColor: '#000',
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    elevation: 4,
+    borderColor: colors.ink700,
+    paddingLeft: spacing.sm,
+    paddingRight: spacing.xs,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.sm,
+    gap: spacing.sm,
   },
   badgeBCV: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    backgroundColor: '#0f172a',
-    paddingHorizontal: 7,
-    paddingVertical: 4,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#475569',
+    gap: 6,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 5,
+    borderRadius: radius.control,
+    backgroundColor: colors.ink900,
   },
   badgeDot: {
-    color: '#10b981',
-    fontSize: 8,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.success,
   },
   badgeText: {
-    color: '#f8fafc',
+    ...type.label,
+    color: colors.slate200,
     fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 0.5,
+    fontWeight: '700',
   },
   ratesWrapper: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    justifyContent: 'center',
+    gap: spacing.md,
   },
-  rateChipUsd: {
+  rateChip: {
     flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(16, 185, 129, 0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(16, 185, 129, 0.3)',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 8,
-    gap: 4,
+    alignItems: 'baseline',
+    gap: 6,
   },
-  currencySymbolUsd: {
-    color: '#34d399',
-    fontSize: 11,
-    fontWeight: '900',
-  },
-  rateChipEur: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(59, 130, 246, 0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(59, 130, 246, 0.3)',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 8,
-    gap: 4,
-  },
-  currencySymbolEur: {
-    color: '#60a5fa',
-    fontSize: 11,
-    fontWeight: '900',
+  currencySymbol: {
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 0.6,
   },
   rateValue: {
-    color: '#ffffff',
-    fontSize: 12,
-    fontWeight: 'bold',
-    fontVariant: ['tabular-nums'],
+    color: colors.white,
+    fontSize: 14,
+    fontWeight: '600',
+    ...type.tabular,
   },
   refreshBtn: {
-    padding: 4,
-    borderRadius: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    width: 36,
+    height: 36,
+    borderRadius: radius.control,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.ink700,
+    minWidth: touch.min - 8,
   },
   refreshIcon: {
-    fontSize: 13,
+    color: colors.slate200,
+    fontSize: 18,
+    fontWeight: '600',
+    lineHeight: 20,
   },
   spinning: {
-    opacity: 0.5,
+    opacity: 0.6,
   },
 });

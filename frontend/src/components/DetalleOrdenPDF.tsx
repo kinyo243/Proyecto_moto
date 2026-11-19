@@ -97,7 +97,7 @@ export default function DetalleOrdenPDF({
           <div className="flex items-center gap-2">
             <button
               onClick={handleEnviarWhatsApp}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold shadow-card transition-colors cursor-pointer"
               title="Compartir enlace/reporte por WhatsApp"
             >
               <MessageSquare className="w-4 h-4" />
@@ -106,7 +106,7 @@ export default function DetalleOrdenPDF({
 
             <button
               onClick={handleDescargar}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-bold shadow-card transition-colors cursor-pointer"
             >
               <Download className="w-4 h-4" />
               <span className="hidden sm:inline">Descargar PDF</span>

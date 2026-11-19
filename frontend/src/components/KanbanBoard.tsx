@@ -11,12 +11,12 @@ import { getOrdenes, updateOrdenEstado } from '../api/endpoints/ordenes';
 import { useToast } from '../context/ToastContext';
 import type { OrdenReparacion, EstadoOrden } from '../types';
 
-const ESTADOS_KANBAN: { estado: EstadoOrden; label: string; color: string; badgeBg: string }[] = [
-  { estado: 'En Espera', label: '1. En Espera', color: 'border-slate-300', badgeBg: 'bg-slate-100 text-slate-800' },
-  { estado: 'En Diagnóstico', label: '2. En Diagnóstico', color: 'border-amber-400', badgeBg: 'bg-amber-100 text-amber-900' },
-  { estado: 'En Reparación', label: '3. En Reparación', color: 'border-indigo-400', badgeBg: 'bg-indigo-100 text-indigo-900' },
-  { estado: 'Listo', label: '4. Listo para Entrega', color: 'border-emerald-400', badgeBg: 'bg-emerald-100 text-emerald-900' },
-  { estado: 'Entregado', label: '5. Entregado / Cerrado', color: 'border-slate-200', badgeBg: 'bg-slate-50 text-slate-500' },
+const ESTADOS_KANBAN: { estado: EstadoOrden; label: string; color: string; badgeBg: string; dot: string }[] = [
+  { estado: 'En Espera', label: 'En Espera', color: 'border-t-slate-400', badgeBg: 'text-slate-700', dot: 'bg-slate-400' },
+  { estado: 'En Diagnóstico', label: 'En Diagnóstico', color: 'border-t-sky-500', badgeBg: 'text-sky-800', dot: 'bg-sky-500' },
+  { estado: 'En Reparación', label: 'En Reparación', color: 'border-t-brand-500', badgeBg: 'text-brand-800', dot: 'bg-brand-500' },
+  { estado: 'Listo', label: 'Listo para Entrega', color: 'border-t-emerald-500', badgeBg: 'text-emerald-800', dot: 'bg-emerald-500' },
+  { estado: 'Entregado', label: 'Entregado', color: 'border-t-slate-300', badgeBg: 'text-slate-500', dot: 'bg-slate-300' },
 ];
 
 const PROXIMO_ESTADO: Record<EstadoOrden, EstadoOrden | null> = {
@@ -83,7 +83,7 @@ export default function KanbanBoard({ onSelectOrden }: KanbanBoardProps) {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center p-16 bg-white rounded-2xl border border-slate-200 text-slate-400 gap-2">
+      <div className="card flex flex-col items-center justify-center p-16 text-slate-400 gap-2">
         <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
         <p className="text-xs font-semibold">Cargando tablero operativo Kanban...</p>
       </div>
@@ -100,14 +100,14 @@ export default function KanbanBoard({ onSelectOrden }: KanbanBoardProps) {
             value={filtro}
             onChange={(e) => setFiltro(e.target.value)}
             placeholder="Filtrar por # orden o notas de recepción..."
-            className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-300 text-xs focus:ring-1 focus:ring-indigo-500 bg-white"
+            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm bg-white shadow-card"
           />
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
         </div>
 
         <button
           onClick={cargarOrdenes}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-xs font-bold text-slate-700 shadow-xs cursor-pointer transition-colors w-fit"
+          className="btn-ghost shadow-card w-fit"
         >
           <RefreshCw className="w-3.5 h-3.5" />
           <span>Actualizar Tablero</span>
@@ -115,18 +115,19 @@ export default function KanbanBoard({ onSelectOrden }: KanbanBoardProps) {
       </div>
 
       {/* Grid de Columnas Kanban */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-start overflow-x-auto pb-4">
-        {ESTADOS_KANBAN.map(({ estado, label, color, badgeBg }) => {
+      <div className="grid grid-flow-col auto-cols-[minmax(250px,1fr)] gap-4 items-start overflow-x-auto pb-4 -mx-1 px-1">
+        {ESTADOS_KANBAN.map(({ estado, label, color, badgeBg, dot }) => {
           const colOrdenes = ordenesFiltradas.filter((o) => o.estado === estado);
 
           return (
             <div
               key={estado}
-              className={`rounded-2xl border bg-slate-50/70 p-3 min-w-[240px] flex flex-col gap-3 shadow-xs ${color}`}
+              className={`rounded-2xl border border-slate-200/80 border-t-[3px] bg-slate-100/60 p-3 min-w-[250px] flex flex-col gap-3 ${color}`}
             >
               {/* Header de la columna */}
               <div className="flex items-center justify-between px-1">
-                <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${badgeBg}`}>
+                <span className={`flex items-center gap-2 text-xs font-semibold ${badgeBg}`}>
+                  <span className={`h-2 w-2 rounded-full ${dot}`} />
                   {label}
                 </span>
                 <span className="text-xs font-bold text-slate-500 bg-white px-2 py-0.5 rounded-full border border-slate-200 shadow-2xs">
@@ -137,7 +138,7 @@ export default function KanbanBoard({ onSelectOrden }: KanbanBoardProps) {
               {/* Tarjetas de órdenes en esta columna */}
               <div className="space-y-2.5 min-h-[300px]">
                 {colOrdenes.length === 0 ? (
-                  <div className="border border-dashed border-slate-200 rounded-xl p-6 text-center text-[11px] text-slate-400">
+                  <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center text-xs text-slate-400">
                     Sin órdenes en esta fase
                   </div>
                 ) : (
@@ -148,7 +149,7 @@ export default function KanbanBoard({ onSelectOrden }: KanbanBoardProps) {
                     return (
                       <div
                         key={orden.id}
-                        className="bg-white rounded-xl border border-slate-200 p-3.5 shadow-xs hover:shadow-md transition-all space-y-2.5 flex flex-col justify-between"
+                        className="group bg-white rounded-xl border border-slate-200/80 p-3.5 shadow-card hover:shadow-elevated hover:-translate-y-0.5 hover:border-slate-300 transition-all space-y-3 flex flex-col justify-between animate-fade-in"
                       >
                         {/* Cabecera de la tarjeta */}
                         <div className="flex items-center justify-between">

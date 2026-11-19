@@ -191,10 +191,10 @@ export default function CamarasPage() {
   return (
     <div className="max-w-7xl mx-auto space-y-6 pb-12">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 card p-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
-            <span className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl">
+            <span className="p-2.5 bg-brand-50 text-brand-600 rounded-xl ring-1 ring-inset ring-brand-100">
               <Camera className="w-6 h-6" />
             </span>
             Monitoreo en Vivo de Bahías
@@ -208,7 +208,7 @@ export default function CamarasPage() {
           <button
             onClick={handleManualRefresh}
             disabled={refreshing || loading}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors shadow-xs cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors shadow-card cursor-pointer disabled:opacity-50"
           >
             <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
             <span>Actualizar Feeds</span>
@@ -229,7 +229,7 @@ export default function CamarasPage() {
             return (
               <div
                 key={bahia.id}
-                className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3"
+                className="card p-4 flex flex-col gap-3"
               >
                 {/* Visor de Video HLS / HTML5 de la bahía */}
                 <BahiaCameraViewer

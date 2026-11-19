@@ -1,9 +1,9 @@
-﻿Write-Host "======================================================================" -ForegroundColor Cyan
+Write-Host "======================================================================" -ForegroundColor Cyan
 Write-Host "          TALLERMOTO PRO - SISTEMA DE GESTION DE TALLER (MVP 1.0)     " -ForegroundColor Cyan
 Write-Host "======================================================================" -ForegroundColor Cyan
 Write-Host ""
 
-$rootDir = "d:\Personal - Laptop\Proyecto_moto"
+$rootDir = $PSScriptRoot
 Set-Location $rootDir
 
 Write-Host "[1/3] Verificando e inicializando base de datos local y usuarios..." -ForegroundColor Yellow

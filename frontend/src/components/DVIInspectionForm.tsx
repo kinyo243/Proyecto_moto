@@ -158,7 +158,7 @@ export default function DVIInspectionForm({ ordenId }: DVIInspectionFormProps) {
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-12">
       {/* Cabecera del DVI */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="card p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <span className="p-2 rounded-xl bg-indigo-50 text-indigo-600">
@@ -184,7 +184,7 @@ export default function DVIInspectionForm({ ordenId }: DVIInspectionFormProps) {
         <div className="flex items-center gap-2.5 flex-wrap">
           <button
             onClick={() => setShowSignaturePad(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-card transition-colors cursor-pointer"
           >
             <PenTool className="w-4 h-4" />
             <span>{dvi?.firma_cliente ? 'Actualizar Firma' : 'Firmar Aprobación'}</span>
@@ -192,7 +192,7 @@ export default function DVIInspectionForm({ ordenId }: DVIInspectionFormProps) {
 
           <button
             onClick={() => setShowPdfModal(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-card transition-colors cursor-pointer"
           >
             <Download className="w-4 h-4" />
             <span>Generar PDF</span>
@@ -236,7 +236,7 @@ export default function DVIInspectionForm({ ordenId }: DVIInspectionFormProps) {
           return (
             <div
               key={cat}
-              className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
+              className="card overflow-hidden"
             >
               {/* Header de Categoría */}
               <div className="bg-slate-50 px-6 py-3.5 border-b border-slate-200 flex items-center justify-between">

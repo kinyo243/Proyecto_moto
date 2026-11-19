@@ -272,10 +272,10 @@ export default function RecepcionVehiculo({ onOrdenCreated }: RecepcionVehiculoP
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-12">
       {/* Encabezado */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 card p-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
-            <span className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl">
+            <span className="p-2.5 bg-brand-50 text-brand-600 rounded-xl ring-1 ring-inset ring-brand-100">
               <Wrench className="w-6 h-6" />
             </span>
             Recepción y Registro de Ingreso
@@ -294,7 +294,7 @@ export default function RecepcionVehiculo({ onOrdenCreated }: RecepcionVehiculoP
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* SECCIÓN 1: CLIENTE */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="card overflow-hidden">
           <div className="bg-slate-50/80 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
             <div className="flex items-center gap-2.5 text-slate-900 font-semibold">
               <User className="w-5 h-5 text-indigo-600" />
@@ -435,7 +435,7 @@ export default function RecepcionVehiculo({ onOrdenCreated }: RecepcionVehiculoP
         </div>
 
         {/* SECCIÓN 2: DATOS DEL VEHÍCULO Y COMBUSTIBLE */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="card overflow-hidden">
           <div className="bg-slate-50/80 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
             <div className="flex items-center gap-2.5 text-slate-900 font-semibold">
               <Car className="w-5 h-5 text-indigo-600" />
@@ -573,7 +573,7 @@ export default function RecepcionVehiculo({ onOrdenCreated }: RecepcionVehiculoP
                       Nivel de Combustible
                     </span>
                   </div>
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-slate-900 border border-slate-200 shadow-xs">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-slate-900 border border-slate-200 shadow-card">
                     {nivelActual} ({sliderCombustible}%)
                   </span>
                 </div>
@@ -613,7 +613,7 @@ export default function RecepcionVehiculo({ onOrdenCreated }: RecepcionVehiculoP
                         onClick={() => setSliderCombustible(item.pct)}
                         className={`text-[10px] font-medium py-1 rounded-md border text-center transition-all ${
                           nivelActual === item.value
-                            ? 'bg-indigo-600 text-white border-indigo-600 font-bold shadow-xs'
+                            ? 'bg-indigo-600 text-white border-indigo-600 font-bold shadow-card'
                             : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'
                         }`}
                       >
@@ -628,7 +628,7 @@ export default function RecepcionVehiculo({ onOrdenCreated }: RecepcionVehiculoP
         </div>
 
         {/* SECCIÓN 3: MOTIVO DE INGRESO Y REPORTE DE FALLAS */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="card overflow-hidden">
           <div className="bg-slate-50/80 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
             <div className="flex items-center gap-2.5 text-slate-900 font-semibold">
               <FileText className="w-5 h-5 text-indigo-600" />
@@ -680,7 +680,7 @@ export default function RecepcionVehiculo({ onOrdenCreated }: RecepcionVehiculoP
                 value={reporteFallas}
                 onChange={(e) => setReporteFallas(e.target.value)}
                 placeholder="Describe detalles adicionales: ruidos al frenar, fallas en frío, testigo encendido en tablero, golpes o rayones previos..."
-                className="w-full p-3.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all resize-none shadow-xs"
+                className="w-full p-3.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all resize-none shadow-card"
               />
             </div>
           </div>
@@ -697,7 +697,7 @@ export default function RecepcionVehiculo({ onOrdenCreated }: RecepcionVehiculoP
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full sm:w-auto ml-auto flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold text-sm shadow-md shadow-indigo-200 transition-all disabled:opacity-50 touch-manipulation cursor-pointer"
+            className="w-full sm:w-auto ml-auto flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold text-sm shadow-sm shadow-brand-600/20 transition-all disabled:opacity-50 touch-manipulation cursor-pointer"
           >
             {isSubmitting ? (
               <>

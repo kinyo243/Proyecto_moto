@@ -16,8 +16,8 @@ export default function App() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <LoadingSpinner size={36} />
+      <div className="min-h-screen bg-ink-950 flex items-center justify-center">
+        <LoadingSpinner size={36} label="Cargando TallerMoto Pro…" />
       </div>
     );
   }

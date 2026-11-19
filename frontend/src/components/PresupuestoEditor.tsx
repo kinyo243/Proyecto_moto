@@ -265,7 +265,7 @@ export default function PresupuestoEditor({ ordenId }: PresupuestoEditorProps) {
               setMontoPago(balance?.saldo_pendiente ? balance.saldo_pendiente.toString() : '');
               setShowPagoModal(true);
             }}
-            className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-card transition-colors cursor-pointer"
           >
             Abonar
           </button>
@@ -273,7 +273,7 @@ export default function PresupuestoEditor({ ordenId }: PresupuestoEditorProps) {
       </div>
 
       {/* Editor de Ítems del Presupuesto */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="card overflow-hidden">
         <div className="bg-slate-50/80 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="p-2 rounded-lg bg-indigo-50 text-indigo-600">
@@ -357,7 +357,7 @@ export default function PresupuestoEditor({ ordenId }: PresupuestoEditorProps) {
               <button
                 type="submit"
                 disabled={agregandoItem}
-                className="w-full flex items-center justify-center p-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                className="w-full flex items-center justify-center p-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-card transition-colors cursor-pointer disabled:opacity-50"
                 title="Agregar concepto"
               >
                 {agregandoItem ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
@@ -474,7 +474,7 @@ export default function PresupuestoEditor({ ordenId }: PresupuestoEditorProps) {
 
       {/* Historial de Pagos Realizados */}
       {balance && balance.pagos.length > 0 && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-3">
+        <div className="card p-6 space-y-3">
           <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2">
             <CreditCard className="w-4 h-4 text-emerald-600" />
             <span>Historial de Pagos y Abonos Registrados</span>
@@ -583,7 +583,7 @@ export default function PresupuestoEditor({ ordenId }: PresupuestoEditorProps) {
                 <button
                   type="submit"
                   disabled={guardandoPago}
-                  className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
+                  className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-card cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
                 >
                   {guardandoPago && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   <span>Confirmar Pago</span>

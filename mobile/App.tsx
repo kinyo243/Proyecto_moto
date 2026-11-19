@@ -15,8 +15,17 @@ import { InventarioScreen } from './src/screens/InventarioScreen';
 import { DviScreen } from './src/screens/DviScreen';
 import { getTasasBCVMovil } from './src/api/bcv';
 import type { TasasBCV, ResumenCajaHoy, OrdenMovil } from './src/types';
+import { colors, radius, spacing, shadowRaised, touch } from './src/theme';
 
 type TabType = 'dashboard' | 'caja' | 'ordenes' | 'dvi' | 'inventario';
+type TabIconName = 'home' | 'caja' | 'dvi' | 'box';
+
+const TABS: { key: TabType; label: string; icon: TabIconName }[] = [
+  { key: 'dashboard', label: 'Inicio', icon: 'home' },
+  { key: 'caja', label: 'Caja', icon: 'caja' },
+  { key: 'dvi', label: 'DVI', icon: 'dvi' },
+  { key: 'inventario', label: 'Repuestos', icon: 'box' },
+];
 
 function MainAppContent() {
   const insets = useSafeAreaInsets();
@@ -24,7 +33,7 @@ function MainAppContent() {
   const [tasas, setTasas] = useState<TasasBCV | null>(null);
   const [loadingTasas, setLoadingTasas] = useState(false);
 
-  // Datos financieros del día (Estilo Fina)
+  // Datos financieros del día
   const [caja] = useState<ResumenCajaHoy>({
     apertura_fecha: '2026-11-18',
     estado_caja: 'abierta',
@@ -104,20 +113,20 @@ function MainAppContent() {
 
   return (
     <View style={[styles.rootContainer, { paddingTop: topPadding }]}>
-      <StatusBar barStyle="light-content" backgroundColor="#0f172a" translucent />
+      <StatusBar barStyle="light-content" />
 
-      {/* Top Header con Logo y Badge */}
+      {/* Cabecera grafito con marca */}
       <View style={styles.topHeader}>
-        <View style={styles.titleRow}>
-          <View style={styles.brandGroup}>
-            <Text style={styles.brandIcon}>🏍️</Text>
-            <View>
-              <Text style={styles.appTitle}>TallerMoto Pro</Text>
-              <Text style={styles.appSubtitle}>Sistema de Gestión y Control</Text>
-            </View>
+        <View style={styles.brandGroup}>
+          <View style={styles.brandMark}>
+            <View style={styles.brandMarkGlow} />
+            <Text style={styles.brandMarkText}>TM</Text>
           </View>
-          <View style={styles.proBadge}>
-            <Text style={styles.proBadgeText}>PRO V1.0</Text>
+          <View>
+            <Text style={styles.appTitle}>
+              TallerMoto <Text style={styles.appTitleAccent}>Pro</Text>
+            </Text>
+            <Text style={styles.appSubtitle}>Gestión del taller</Text>
           </View>
         </View>
       </View>
@@ -160,57 +169,74 @@ function MainAppContent() {
 
       {/* Barra de Navegación Inferior con Margen Seguro (Anti-Solapamiento) */}
       <View style={[styles.bottomBar, { paddingBottom: bottomPadding }]}>
-        <TouchableOpacity
-          style={styles.tabBtn}
-          onPress={() => setActiveTab('dashboard')}
-          activeOpacity={0.7}
-        >
-          <View style={[styles.iconWrapper, activeTab === 'dashboard' && styles.iconWrapperActive]}>
-            <Text style={styles.tabIcon}>📊</Text>
-          </View>
-          <Text style={[styles.tabLabel, activeTab === 'dashboard' && styles.tabLabelActive]}>
-            Inicio
-          </Text>
-        </TouchableOpacity>
+        {TABS.map((tab) => {
+          const active = activeTab === tab.key;
+          const tint = active ? colors.primary : colors.slate400;
+          return (
+            <TouchableOpacity
+              key={tab.key}
+              style={styles.tabBtn}
+              onPress={() => setActiveTab(tab.key)}
+              activeOpacity={0.7}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: active }}
+              accessibilityLabel={tab.label}
+            >
+              <View style={[styles.tabIndicator, active && styles.tabIndicatorActive]} />
+              <View style={[styles.iconWrapper, active && styles.iconWrapperActive]}>
+                <TabIcon name={tab.icon} color={tint} />
+              </View>
+              <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>
+                {tab.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
 
-        <TouchableOpacity
-          style={styles.tabBtn}
-          onPress={() => setActiveTab('caja')}
-          activeOpacity={0.7}
-        >
-          <View style={[styles.iconWrapper, activeTab === 'caja' && styles.iconWrapperActive]}>
-            <Text style={styles.tabIcon}>💵</Text>
-          </View>
-          <Text style={[styles.tabLabel, activeTab === 'caja' && styles.tabLabelActive]}>
-            Caja
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.tabBtn}
-          onPress={() => setActiveTab('dvi')}
-          activeOpacity={0.7}
-        >
-          <View style={[styles.iconWrapper, activeTab === 'dvi' && styles.iconWrapperActive]}>
-            <Text style={styles.tabIcon}>📸</Text>
-          </View>
-          <Text style={[styles.tabLabel, activeTab === 'dvi' && styles.tabLabelActive]}>
-            DVI
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.tabBtn}
-          onPress={() => setActiveTab('inventario')}
-          activeOpacity={0.7}
-        >
-          <View style={[styles.iconWrapper, activeTab === 'inventario' && styles.iconWrapperActive]}>
-            <Text style={styles.tabIcon}>📦</Text>
-          </View>
-          <Text style={[styles.tabLabel, activeTab === 'inventario' && styles.tabLabelActive]}>
-            Repuestos
-          </Text>
-        </TouchableOpacity>
+/** Iconos de pestaña dibujados con Views (sin librerías de iconos). */
+function TabIcon({ name, color }: { name: TabIconName; color: string }) {
+  if (name === 'home') {
+    return (
+      <View style={iconStyles.frame}>
+        <View style={iconStyles.grid}>
+          {[0, 1, 2, 3].map((i) => (
+            <View
+              key={i}
+              style={[iconStyles.gridCell, { borderColor: color }, i === 0 && { backgroundColor: color }]}
+            />
+          ))}
+        </View>
+      </View>
+    );
+  }
+  if (name === 'caja') {
+    return (
+      <View style={iconStyles.frame}>
+        <View style={[iconStyles.bill, { borderColor: color }]}>
+          <View style={[iconStyles.billCoin, { borderColor: color }]} />
+        </View>
+      </View>
+    );
+  }
+  if (name === 'dvi') {
+    return (
+      <View style={iconStyles.frame}>
+        <View style={[iconStyles.cameraBump, { backgroundColor: color }]} />
+        <View style={[iconStyles.cameraBody, { borderColor: color }]}>
+          <View style={[iconStyles.cameraLens, { borderColor: color }]} />
+        </View>
+      </View>
+    );
+  }
+  return (
+    <View style={iconStyles.frame}>
+      <View style={[iconStyles.boxBody, { borderColor: color }]}>
+        <View style={[iconStyles.boxLid, { backgroundColor: color }]} />
+        <View style={[iconStyles.boxHandle, { backgroundColor: color }]} />
       </View>
     </View>
   );
@@ -227,92 +253,184 @@ export default function App() {
 const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
-    backgroundColor: '#0f172a',
+    backgroundColor: colors.ink950,
   },
   topHeader: {
-    paddingHorizontal: 16,
-    paddingTop: 4,
-    paddingBottom: 4,
-    backgroundColor: '#0f172a',
-  },
-  titleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    paddingHorizontal: spacing.gutter,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.sm,
+    backgroundColor: colors.ink950,
   },
   brandGroup: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: spacing.md,
   },
-  brandIcon: {
-    fontSize: 22,
+  brandMark: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  brandMarkGlow: {
+    position: 'absolute',
+    right: -8,
+    bottom: -8,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: colors.brand[400],
+  },
+  brandMarkText: {
+    color: colors.white,
+    fontSize: 14,
+    fontWeight: '800',
+    letterSpacing: -0.5,
   },
   appTitle: {
     fontSize: 17,
-    fontWeight: '900',
-    color: '#ffffff',
+    fontWeight: '700',
+    color: colors.white,
     letterSpacing: -0.3,
   },
+  appTitleAccent: {
+    color: colors.brand[400],
+  },
   appSubtitle: {
-    fontSize: 10,
-    color: '#94a3b8',
+    fontSize: 12,
+    color: colors.slate400,
     fontWeight: '500',
-  },
-  proBadge: {
-    backgroundColor: 'rgba(37, 99, 235, 0.2)',
-    borderWidth: 1,
-    borderColor: '#3b82f6',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 8,
-  },
-  proBadgeText: {
-    color: '#60a5fa',
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 0.5,
+    marginTop: 1,
   },
   mainContent: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: colors.canvas,
   },
   bottomBar: {
     flexDirection: 'row',
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.surface,
     borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
-    paddingTop: 8,
+    borderTopColor: colors.border,
+    paddingHorizontal: spacing.sm,
     justifyContent: 'space-around',
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 8,
+    ...shadowRaised,
   },
   tabBtn: {
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 64,
+    justifyContent: 'flex-start',
+    minHeight: touch.min + 12,
+    paddingBottom: spacing.xs,
+  },
+  tabIndicator: {
+    width: 28,
+    height: 3,
+    borderBottomLeftRadius: 3,
+    borderBottomRightRadius: 3,
+    backgroundColor: 'transparent',
+    marginBottom: 6,
+  },
+  tabIndicatorActive: {
+    backgroundColor: colors.primary,
   },
   iconWrapper: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 16,
+    width: 52,
+    height: 30,
+    borderRadius: radius.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 2,
   },
   iconWrapperActive: {
-    backgroundColor: '#eff6ff',
-  },
-  tabIcon: {
-    fontSize: 20,
+    backgroundColor: colors.primarySoft,
   },
   tabLabel: {
     fontSize: 11,
-    color: '#64748b',
+    color: colors.slate400,
     fontWeight: '500',
   },
   tabLabelActive: {
-    color: '#2563eb',
+    color: colors.primary,
     fontWeight: '700',
+  },
+});
+
+const iconStyles = StyleSheet.create({
+  frame: {
+    width: 22,
+    height: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  grid: {
+    width: 18,
+    height: 18,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    alignContent: 'space-between',
+  },
+  gridCell: {
+    width: 8,
+    height: 8,
+    borderRadius: 2,
+    borderWidth: 1.75,
+  },
+  bill: {
+    width: 20,
+    height: 14,
+    borderRadius: 3,
+    borderWidth: 1.75,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  billCoin: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    borderWidth: 1.5,
+  },
+  cameraBump: {
+    width: 8,
+    height: 3,
+    borderTopLeftRadius: 2,
+    borderTopRightRadius: 2,
+    marginBottom: -1,
+  },
+  cameraBody: {
+    width: 20,
+    height: 15,
+    borderRadius: 4,
+    borderWidth: 1.75,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cameraLens: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    borderWidth: 1.5,
+  },
+  boxBody: {
+    width: 18,
+    height: 17,
+    borderRadius: 3,
+    borderWidth: 1.75,
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  boxLid: {
+    width: '100%',
+    height: 1.75,
+    marginTop: 4,
+  },
+  boxHandle: {
+    width: 6,
+    height: 1.75,
+    borderRadius: 1,
+    marginTop: 3,
   },
 });

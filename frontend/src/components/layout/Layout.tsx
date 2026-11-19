@@ -12,7 +12,7 @@ export default function Layout({ activeView, onNavigate, children }: LayoutProps
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex h-screen overflow-hidden bg-canvas">
       <Sidebar
         activeView={activeView}
         onNavigate={onNavigate}
@@ -21,10 +21,16 @@ export default function Layout({ activeView, onNavigate, children }: LayoutProps
       />
 
       <div className="flex flex-1 flex-col overflow-hidden">
-        <Navbar onMenuClick={() => setSidebarOpen(true)} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">{children}</main>
+        <Navbar activeView={activeView} onMenuClick={() => setSidebarOpen(true)} />
+        <main className="flex-1 overflow-y-auto">
+          <div
+            key={activeView}
+            className="mx-auto w-full max-w-[1600px] animate-fade-in p-4 md:p-6 lg:p-8"
+          >
+            {children}
+          </div>
+        </main>
       </div>
     </div>
   );
 }
-

@@ -1,26 +1,57 @@
 import { useEffect, useState } from 'react';
-import { Menu, Globe, RefreshCw, DollarSign, Euro, Building2 } from 'lucide-react';
+import { Menu, Globe, RefreshCw } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import apiClient from '../../api/client';
 import { getTasasBCV, type TasasBCV } from '../../api/endpoints/bcv';
+import { VIEW_LABEL_KEY, type ViewName } from './Sidebar';
 
 interface NavbarProps {
+  activeView: ViewName;
   onMenuClick: () => void;
 }
 
 type ConnectionStatus = 'connected' | 'disconnected' | 'checking';
 
-const STATUS_COLORS: Record<ConnectionStatus, string> = {
-  connected: 'bg-green-500',
-  disconnected: 'bg-red-500',
-  checking: 'bg-yellow-400',
+const STATUS_STYLES: Record<ConnectionStatus, { dot: string; ring: string; text: string }> = {
+  connected: { dot: 'bg-emerald-500', ring: 'bg-emerald-500/30', text: 'text-emerald-700' },
+  disconnected: { dot: 'bg-rose-500', ring: 'bg-rose-500/30', text: 'text-rose-700' },
+  checking: { dot: 'bg-amber-400', ring: 'bg-amber-400/30', text: 'text-amber-700' },
 };
 
-export default function Navbar({ onMenuClick }: NavbarProps) {
+const formatMontoBs = (monto: number) =>
+  new Intl.NumberFormat('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(monto);
+
+function RateChip({
+  code,
+  value,
+  loading,
+  tone,
+}: {
+  code: 'USD' | 'EUR';
+  value?: number | null;
+  loading: boolean;
+  tone: string;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className={`rounded-md px-1.5 py-0.5 text-[10px] font-bold tracking-wide ${tone}`}>{code}</span>
+      {loading && !value ? (
+        <span className="h-3.5 w-16 animate-pulse rounded bg-slate-200" />
+      ) : value ? (
+        <span className="num text-[13px] font-semibold text-slate-800">
+          <span className="mr-0.5 text-[11px] font-medium text-slate-400">Bs</span>
+          {formatMontoBs(value)}
+        </span>
+      ) : (
+        <span className="text-[11px] text-slate-400">N/D</span>
+      )}
+    </div>
+  );
+}
+
+export default function Navbar({ activeView, onMenuClick }: NavbarProps) {
   const { lang, setLang, t } = useLanguage();
   const [connStatus, setConnStatus] = useState<ConnectionStatus>('checking');
-
-  // Tasas BCV en tiempo real para el ticker superior en el Navbar
   const [tasas, setTasas] = useState<TasasBCV | null>(null);
   const [loadingTasas, setLoadingTasas] = useState<boolean>(false);
 
@@ -48,11 +79,8 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
   useEffect(() => {
     checkHealth();
     fetchTasas();
-
     const healthInterval = setInterval(checkHealth, 30_000);
-    // Refrescar tasas automáticamente cada 5 minutos
     const tasasInterval = setInterval(() => fetchTasas(false), 300_000);
-
     return () => {
       clearInterval(healthInterval);
       clearInterval(tasasInterval);
@@ -66,105 +94,75 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
         ? t('conn.disconnected')
         : t('conn.checking');
 
-  const formatMontoBs = (monto: number) => {
-    return new Intl.NumberFormat('es-VE', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(monto);
-  };
+  const st = STATUS_STYLES[connStatus];
+  const today = new Date().toLocaleDateString(lang === 'es' ? 'es-VE' : 'en-US', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  });
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-gray-200 bg-white px-4 shadow-sm">
-      {/* Lado Izquierdo: Botón Menú Mobile */}
-      <div className="flex items-center gap-2">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b border-slate-200/80 bg-white/80 px-4 backdrop-blur-md md:px-6 lg:px-8">
+      {/* Izquierda: menú móvil + título de la vista */}
+      <div className="flex min-w-0 items-center gap-3">
         <button
           onClick={onMenuClick}
-          className="lg:hidden text-gray-500 hover:text-gray-900 p-1 rounded-md hover:bg-gray-100"
+          className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-900 lg:hidden"
           aria-label="Abrir menú"
         >
           <Menu size={22} />
         </button>
+        <div className="min-w-0">
+          <p className="truncate text-[15px] font-semibold tracking-tight text-slate-900">
+            {t(VIEW_LABEL_KEY[activeView] as Parameters<typeof t>[0])}
+          </p>
+          <p className="hidden truncate text-xs text-slate-500 first-letter:uppercase sm:block">{today}</p>
+        </div>
       </div>
 
-      {/* Ticker Central Superior: Tasas Oficiales BCV (USD / EUR) Siempre Visibles */}
-      <div className="flex-1 flex items-center justify-center max-w-xl mx-auto">
+      {/* Derecha: tasas BCV, conexión, idioma */}
+      <div className="flex items-center gap-2 sm:gap-3">
         <div
-          className="flex items-center gap-2 sm:gap-3 bg-slate-50 border border-slate-200 rounded-full px-3 py-1 text-xs shadow-xs transition-all hover:border-slate-300"
+          className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white py-1.5 pr-1.5 pl-3 shadow-card"
           title={
             tasas?.fecha_valor
-              ? `Banco Central de Venezuela (BCV) | Fecha Valor: ${tasas.fecha_valor}`
-              : 'Tasas Oficiales Banco Central de Venezuela'
+              ? `Banco Central de Venezuela (BCV) · Fecha valor: ${tasas.fecha_valor}`
+              : 'Tasas oficiales Banco Central de Venezuela'
           }
         >
-          {/* Logo / Badge BCV */}
-          <div className="flex items-center gap-1 font-semibold text-slate-700 border-r border-slate-200 pr-2">
-            <Building2 size={13} className="text-primary-600 hidden sm:inline" />
-            <span className="tracking-wide text-[11px] font-bold text-slate-800">BCV</span>
+          <span className="hidden text-[10px] font-bold tracking-[0.12em] text-slate-400 md:inline">BCV</span>
+          <RateChip code="USD" value={tasas?.usd} loading={loadingTasas} tone="bg-emerald-50 text-emerald-700" />
+          <span className="hidden h-4 w-px bg-slate-200 sm:block" />
+          <div className="hidden sm:block">
+            <RateChip code="EUR" value={tasas?.eur} loading={loadingTasas} tone="bg-violet-50 text-violet-700" />
           </div>
-
-          {/* Dólar Oficial */}
-          <div className="flex items-center gap-1.5">
-            <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 font-bold text-[10px]">
-              <DollarSign size={10} />
-            </span>
-            <span className="font-semibold text-slate-600 hidden md:inline">USD:</span>
-            {loadingTasas && !tasas ? (
-              <span className="text-slate-400 font-mono text-[11px] animate-pulse">Cargando...</span>
-            ) : tasas?.usd ? (
-              <span className="font-bold text-emerald-700 font-mono text-[12px]">
-                Bs. {formatMontoBs(tasas.usd)}
-              </span>
-            ) : (
-              <span className="text-slate-400 text-[11px]">N/D</span>
-            )}
-          </div>
-
-          <span className="text-slate-300 font-light">•</span>
-
-          {/* Euro Oficial */}
-          <div className="flex items-center gap-1.5">
-            <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-100 text-blue-700 font-bold text-[10px]">
-              <Euro size={10} />
-            </span>
-            <span className="font-semibold text-slate-600 hidden md:inline">EUR:</span>
-            {loadingTasas && !tasas ? (
-              <span className="text-slate-400 font-mono text-[11px] animate-pulse">Cargando...</span>
-            ) : tasas?.eur ? (
-              <span className="font-bold text-blue-700 font-mono text-[12px]">
-                Bs. {formatMontoBs(tasas.eur)}
-              </span>
-            ) : (
-              <span className="text-slate-400 text-[11px]">N/D</span>
-            )}
-          </div>
-
-          {/* Botón de Sincronización Manual */}
           <button
             onClick={() => fetchTasas(true)}
             disabled={loadingTasas}
-            className={`p-1 rounded-full text-slate-400 hover:text-primary-600 hover:bg-slate-200/60 transition-all ${
-              loadingTasas ? 'animate-spin text-primary-600' : ''
-            }`}
+            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-brand-600"
             title="Actualizar tasas oficiales desde el BCV ahora"
             aria-label="Actualizar tasas BCV"
           >
-            <RefreshCw size={12} />
+            <RefreshCw size={13} className={loadingTasas ? 'animate-spin text-brand-600' : ''} />
           </button>
         </div>
-      </div>
 
-      {/* Lado Derecho: Estado de Conexión + Idioma */}
-      <div className="flex items-center gap-3">
-        {/* Connection status */}
-        <div className="flex items-center gap-2">
-          <span className={`h-2.5 w-2.5 rounded-full ${STATUS_COLORS[connStatus]}`} />
-          <span className="text-xs text-gray-500 hidden sm:inline">{connLabel}</span>
+        <div
+          className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-white px-2.5 py-2 shadow-card md:flex"
+          title={connLabel}
+        >
+          <span className="relative flex h-2 w-2">
+            {connStatus === 'connected' && (
+              <span className={`absolute inline-flex h-full w-full animate-ping rounded-full ${st.ring}`} />
+            )}
+            <span className={`relative inline-flex h-2 w-2 rounded-full ${st.dot}`} />
+          </span>
+          <span className={`text-xs font-medium ${st.text}`}>{connLabel}</span>
         </div>
 
-        {/* Language toggle */}
         <button
           onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
-          className="flex items-center gap-1.5 rounded-md border border-gray-200 px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+          className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-2.5 py-2 text-xs font-semibold text-slate-600 shadow-card transition-colors hover:bg-slate-50"
           title="Cambiar idioma"
         >
           <Globe size={14} />

@@ -247,10 +247,10 @@ export default function ConfiguracionPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-6 pb-16">
       {/* Header del Módulo */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 card p-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
-            <span className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl">
+            <span className="p-2.5 bg-brand-50 text-brand-600 rounded-xl ring-1 ring-inset ring-brand-100">
               <Building2 className="w-6 h-6" />
             </span>
             Configuración del Taller y Parámetros
@@ -263,7 +263,7 @@ export default function ConfiguracionPage() {
         <button
           onClick={handleGuardarCambios}
           disabled={guardando}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-bold shadow-md shadow-indigo-200 transition-all cursor-pointer disabled:opacity-50"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-bold shadow-sm shadow-brand-600/20 transition-all cursor-pointer disabled:opacity-50"
         >
           {guardando ? (
             <RefreshCw className="w-4 h-4 animate-spin" />
@@ -275,11 +275,11 @@ export default function ConfiguracionPage() {
       </div>
 
       {/* Barra de Pestañas */}
-      <div className="flex bg-slate-200/80 p-1.5 rounded-2xl border border-slate-300/80 overflow-x-auto gap-1">
+      <div className="flex bg-white p-1.5 rounded-2xl border border-slate-200 shadow-card overflow-x-auto gap-1">
         <button
           onClick={() => setActiveTab('taller')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
-            activeTab === 'taller' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            activeTab === 'taller' ? 'bg-brand-600 text-white shadow-sm shadow-brand-600/25' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <Building2 className="w-4 h-4" />
@@ -289,7 +289,7 @@ export default function ConfiguracionPage() {
         <button
           onClick={() => setActiveTab('usuarios')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
-            activeTab === 'usuarios' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            activeTab === 'usuarios' ? 'bg-brand-600 text-white shadow-sm shadow-brand-600/25' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <Users className="w-4 h-4" />
@@ -299,7 +299,7 @@ export default function ConfiguracionPage() {
         <button
           onClick={() => setActiveTab('bahias')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
-            activeTab === 'bahias' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            activeTab === 'bahias' ? 'bg-brand-600 text-white shadow-sm shadow-brand-600/25' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <Camera className="w-4 h-4" />
@@ -309,7 +309,7 @@ export default function ConfiguracionPage() {
         <button
           onClick={() => setActiveTab('dvi')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
-            activeTab === 'dvi' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            activeTab === 'dvi' ? 'bg-brand-600 text-white shadow-sm shadow-brand-600/25' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <ClipboardList className="w-4 h-4" />
@@ -319,7 +319,7 @@ export default function ConfiguracionPage() {
         <button
           onClick={() => setActiveTab('finanzas')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
-            activeTab === 'finanzas' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            activeTab === 'finanzas' ? 'bg-brand-600 text-white shadow-sm shadow-brand-600/25' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <DollarSign className="w-4 h-4" />
@@ -329,7 +329,7 @@ export default function ConfiguracionPage() {
         <button
           onClick={() => setActiveTab('respaldos')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
-            activeTab === 'respaldos' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            activeTab === 'respaldos' ? 'bg-brand-600 text-white shadow-sm shadow-brand-600/25' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <Database className="w-4 h-4" />
@@ -339,7 +339,7 @@ export default function ConfiguracionPage() {
 
       {/* CONTENIDO 1: DATOS DEL TALLER Y RIF */}
       {activeTab === 'taller' && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden p-6 space-y-6">
+        <div className="card overflow-hidden p-6 space-y-6">
           <div>
             <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
               <Building2 className="w-5 h-5 text-indigo-600" />
@@ -445,7 +445,7 @@ export default function ConfiguracionPage() {
       {activeTab === 'usuarios' && (
         <div className="space-y-6">
           {/* Formulario nuevo usuario */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+          <div className="card p-6 space-y-4">
             <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
               <Users className="w-5 h-5 text-indigo-600" />
               <span>Dar de Alta a un Nuevo Empleado</span>
@@ -518,7 +518,7 @@ export default function ConfiguracionPage() {
               <div className="sm:col-span-2">
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs cursor-pointer transition-colors"
+                  className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-card cursor-pointer transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Crear Usuario</span>
@@ -528,7 +528,7 @@ export default function ConfiguracionPage() {
           </div>
 
           {/* Lista de Empleados */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="card overflow-hidden">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                 Personal del Taller Registrado ({empleados.length})
@@ -589,7 +589,7 @@ export default function ConfiguracionPage() {
       {activeTab === 'bahias' && (
         <div className="space-y-6">
           {/* Formulario nueva bahía */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+          <div className="card p-6 space-y-4">
             <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
               <Camera className="w-5 h-5 text-indigo-600" />
               <span>Configurar Nueva Bahía o Elevador con Cámara IP</span>
@@ -633,7 +633,7 @@ export default function ConfiguracionPage() {
               <div className="sm:col-span-2">
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs cursor-pointer transition-colors"
+                  className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-card cursor-pointer transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Añadir Bahía</span>
@@ -645,7 +645,7 @@ export default function ConfiguracionPage() {
           {/* Grid de bahías activas */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {bahias.map((b) => (
-              <div key={b.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-3">
+              <div key={b.id} className="card p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700">
                     ID #{b.id}
@@ -675,7 +675,7 @@ export default function ConfiguracionPage() {
       {/* CONTENIDO 4: PLANTILLA DVI PERSONALIZADA */}
       {activeTab === 'dvi' && (
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+          <div className="card p-6 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
@@ -732,7 +732,7 @@ export default function ConfiguracionPage() {
               <div className="sm:col-span-2">
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs cursor-pointer transition-colors"
+                  className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-card cursor-pointer transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Añadir Punto</span>
@@ -742,7 +742,7 @@ export default function ConfiguracionPage() {
           </div>
 
           {/* Listado de puntos DVI configurados */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="card overflow-hidden">
             <div className="divide-y divide-slate-100">
               {itemsDVI.map((item) => (
                 <div key={item.id} className="p-3.5 px-6 flex items-center justify-between hover:bg-slate-50 transition-colors">
@@ -774,7 +774,7 @@ export default function ConfiguracionPage() {
 
       {/* CONTENIDO 5: MONEDA, IVA Y COBRANZA */}
       {activeTab === 'finanzas' && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+        <div className="card p-6 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
@@ -954,7 +954,7 @@ export default function ConfiguracionPage() {
       {activeTab === 'respaldos' && (
         <div className="space-y-6">
           {/* Plantilla de WhatsApp */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+          <div className="card p-6 space-y-4">
             <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
               <MessageSquare className="w-5 h-5 text-emerald-600" />
               <span>Plantilla de Mensaje Automatizado por WhatsApp</span>
@@ -972,7 +972,7 @@ export default function ConfiguracionPage() {
           </div>
 
           {/* Copia de Seguridad */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="card p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <Database className="w-4 h-4 text-indigo-600" />
@@ -985,7 +985,7 @@ export default function ConfiguracionPage() {
 
             <button
               onClick={handleDescargarBackup}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer shrink-0"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-card transition-colors cursor-pointer shrink-0"
             >
               <Download className="w-4 h-4" />
               <span>Descargar Copia de Seguridad</span>

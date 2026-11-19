@@ -227,7 +227,7 @@ export default function BahiaCameraViewer({
         {/* Orden activa en la bahía */}
         <div>
           {bahia.orden_activa ? (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-indigo-500/80 text-white backdrop-blur-md shadow-xs">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-indigo-500/80 text-white backdrop-blur-md shadow-card">
               <Tag className="w-3 h-3" />
               OR #{bahia.orden_activa.id}
             </span>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import type { RepuestoInventario, TasasBCV } from '../types';
+import { card, colors, radius, spacing, touch, type } from '../theme';
 
 interface InventarioScreenProps {
   tasas: TasasBCV | null;
@@ -77,43 +78,68 @@ export const InventarioScreen: React.FC<InventarioScreenProps> = ({ tasas }) => 
   });
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      keyboardShouldPersistTaps="handled"
+    >
       {/* Buscador de repuestos */}
       <View style={styles.searchBox}>
-        <Text style={styles.searchIcon}>🔍</Text>
+        <View style={styles.searchIcon}>
+          <View style={styles.searchIconRing} />
+          <View style={styles.searchIconHandle} />
+        </View>
         <TextInput
           style={styles.searchInput}
           placeholder="Buscar repuesto, código o pasillo..."
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor={colors.slate400}
+          selectionColor={colors.primary}
           value={busqueda}
           onChangeText={setBusqueda}
         />
         {busqueda.length > 0 && (
-          <TouchableOpacity onPress={() => setBusqueda('')}>
-            <Text style={styles.clearBtn}>✕</Text>
+          <TouchableOpacity
+            onPress={() => setBusqueda('')}
+            style={styles.clearBtn}
+            accessibilityRole="button"
+            accessibilityLabel="Limpiar búsqueda"
+          >
+            <Text style={styles.clearBtnText}>✕</Text>
           </TouchableOpacity>
         )}
       </View>
 
       {/* Filtros de Categoría */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.catScroll}>
-        {CATEGORIAS.map((cat) => (
-          <TouchableOpacity
-            key={cat}
-            style={[styles.catChip, catActiva === cat && styles.catChipActive]}
-            onPress={() => setCatActiva(cat)}
-            activeOpacity={0.7}
-          >
-            <Text style={[styles.catChipText, catActiva === cat && styles.catChipTextActive]}>
-              {cat}
-            </Text>
-          </TouchableOpacity>
-        ))}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.catScroll}
+        contentContainerStyle={styles.catScrollContent}
+      >
+        {CATEGORIAS.map((cat) => {
+          const active = catActiva === cat;
+          return (
+            <TouchableOpacity
+              key={cat}
+              style={[styles.catChip, active && styles.catChipActive]}
+              onPress={() => setCatActiva(cat)}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityState={{ selected: active }}
+            >
+              <Text style={[styles.catChipText, active && styles.catChipTextActive]}>
+                {cat}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </ScrollView>
 
       <View style={styles.headerRow}>
-        <Text style={styles.sectionTitle}>CATÁLOGO CON UBICACIÓN EN TALLER</Text>
-        <Text style={styles.resultsCount}>{repuestosFiltrados.length} piezas</Text>
+        <Text style={styles.sectionTitle}>Catálogo con ubicación</Text>
+        <View style={styles.countBadge}>
+          <Text style={styles.resultsCount}>{repuestosFiltrados.length} piezas</Text>
+        </View>
       </View>
 
       {repuestosFiltrados.map((rep) => {
@@ -122,14 +148,15 @@ export const InventarioScreen: React.FC<InventarioScreenProps> = ({ tasas }) => 
         const margen = (((rep.precio_venta_usd - rep.costo_usd) / rep.costo_usd) * 100).toFixed(0);
 
         return (
-          <View key={rep.id} style={styles.card}>
+          <View key={rep.id} style={[card, styles.card]}>
             <View style={styles.cardHeader}>
               <View style={styles.codeBadge}>
                 <Text style={styles.codeText}>{rep.codigo_parte}</Text>
               </View>
               <View style={[styles.stockBadge, esBajoStock ? styles.stockBajo : styles.stockOk]}>
+                <View style={[styles.stockDot, { backgroundColor: esBajoStock ? colors.danger : colors.success }]} />
                 <Text style={[styles.stockText, esBajoStock ? styles.stockTextBajo : styles.stockTextOk]}>
-                  {esBajoStock ? '⚠️ STOCK MÍNIMO' : 'DISPONIBLE'}: {rep.stock_actual} uds
+                  {esBajoStock ? 'Stock mínimo' : 'Disponible'}: {rep.stock_actual} uds
                 </Text>
               </View>
             </View>
@@ -138,9 +165,9 @@ export const InventarioScreen: React.FC<InventarioScreenProps> = ({ tasas }) => 
 
             {/* Ubicación física exacta en el taller */}
             <View style={styles.locationContainer}>
-              <Text style={styles.locationPin}>📍</Text>
+              <View style={styles.locationPin} />
               <View style={styles.locationTextGroup}>
-                <Text style={styles.locationLabel}>Ubicación:</Text>
+                <Text style={styles.locationLabel}>Ubicación</Text>
                 <Text style={styles.locationValue}>
                   {rep.ubicacion_pasillo} • {rep.ubicacion_estante} {rep.ubicacion_gaveta ? `• ${rep.ubicacion_gaveta}` : ''}
                 </Text>
@@ -150,8 +177,10 @@ export const InventarioScreen: React.FC<InventarioScreenProps> = ({ tasas }) => 
             {/* Precios Multimoneda */}
             <View style={styles.footerPrices}>
               <View>
-                <Text style={styles.priceSub}>Precio al Público</Text>
-                <Text style={styles.priceUsd}>${rep.precio_venta_usd.toFixed(2)} USD</Text>
+                <Text style={styles.priceSub}>Precio al público</Text>
+                <Text style={styles.priceUsd}>
+                  ${rep.precio_venta_usd.toFixed(2)} <Text style={styles.priceUsdCurrency}>USD</Text>
+                </Text>
                 <Text style={styles.priceBs}>
                   ≈ Bs. {precioBs.toLocaleString('es-VE', { minimumFractionDigits: 2 })}
                 </Text>
@@ -174,206 +203,252 @@ export const InventarioScreen: React.FC<InventarioScreenProps> = ({ tasas }) => 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: colors.canvas,
   },
   content: {
-    padding: 16,
-    paddingBottom: 95,
+    padding: spacing.gutter,
+    paddingBottom: spacing.xxxl,
   },
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderWidth: 1.5,
-    borderColor: '#e2e8f0',
-    borderRadius: 14,
-    paddingHorizontal: 12,
-    marginBottom: 12,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.sm,
+    paddingLeft: spacing.md,
+    paddingRight: spacing.xs,
+    minHeight: 48,
+    marginBottom: spacing.md,
   },
   searchIcon: {
-    fontSize: 16,
-    marginRight: 6,
+    width: 18,
+    height: 18,
+    marginRight: spacing.sm,
+  },
+  searchIconRing: {
+    width: 13,
+    height: 13,
+    borderRadius: 7,
+    borderWidth: 2,
+    borderColor: colors.slate400,
+  },
+  searchIconHandle: {
+    position: 'absolute',
+    width: 6,
+    height: 2,
+    borderRadius: 1,
+    backgroundColor: colors.slate400,
+    right: 0,
+    bottom: 3,
+    transform: [{ rotate: '45deg' }],
   },
   searchInput: {
     flex: 1,
-    paddingVertical: 10,
-    fontSize: 13,
-    color: '#0f172a',
+    paddingVertical: 12,
+    fontSize: 14,
+    color: colors.text,
   },
   clearBtn: {
-    color: '#94a3b8',
+    width: touch.min,
+    height: touch.min,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  clearBtnText: {
+    color: colors.slate400,
     fontSize: 16,
-    padding: 4,
   },
   catScroll: {
-    marginBottom: 14,
+    marginBottom: spacing.lg,
+    marginHorizontal: -spacing.gutter,
+  },
+  catScrollContent: {
+    paddingHorizontal: spacing.gutter,
+    gap: spacing.sm,
   },
   catChip: {
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 20,
-    marginRight: 8,
+    borderColor: colors.border,
+    paddingHorizontal: spacing.lg,
+    minHeight: 36,
+    justifyContent: 'center',
+    borderRadius: radius.pill,
   },
   catChipActive: {
-    backgroundColor: '#2563eb',
-    borderColor: '#2563eb',
+    backgroundColor: colors.ink900,
+    borderColor: colors.ink900,
   },
   catChipText: {
-    fontSize: 12,
-    color: '#64748b',
-    fontWeight: '600',
+    fontSize: 13,
+    color: colors.slate600,
+    fontWeight: '500',
   },
   catChipTextActive: {
-    color: '#ffffff',
-    fontWeight: '700',
+    color: colors.white,
+    fontWeight: '600',
   },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: spacing.md,
   },
   sectionTitle: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: '#64748b',
-    letterSpacing: 0.5,
+    ...type.label,
+  },
+  countBadge: {
+    backgroundColor: colors.slate100,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: radius.pill,
   },
   resultsCount: {
     fontSize: 11,
-    color: '#94a3b8',
+    color: colors.slate600,
     fontWeight: '600',
+    ...type.tabular,
   },
   card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.03,
-    shadowRadius: 5,
-    elevation: 2,
+    marginBottom: spacing.md,
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 6,
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
   },
   codeBadge: {
-    backgroundColor: '#f1f5f9',
-    paddingHorizontal: 8,
+    backgroundColor: colors.slate100,
+    paddingHorizontal: spacing.sm,
     paddingVertical: 3,
     borderRadius: 6,
   },
   codeText: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: '#475569',
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.slate600,
+    letterSpacing: 0.4,
+    ...type.tabular,
   },
   stockBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: radius.pill,
+  },
+  stockDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
   },
   stockOk: {
-    backgroundColor: '#ecfdf5',
+    backgroundColor: colors.successSoft,
   },
   stockBajo: {
-    backgroundColor: '#fef2f2',
+    backgroundColor: colors.dangerSoft,
   },
   stockText: {
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: 11,
+    fontWeight: '600',
+    ...type.tabular,
   },
   stockTextOk: {
-    color: '#059669',
+    color: colors.successText,
   },
   stockTextBajo: {
-    color: '#dc2626',
+    color: colors.dangerText,
   },
   nombre: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#0f172a',
-    marginVertical: 4,
+    ...type.section,
+    lineHeight: 21,
   },
   locationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8fafc',
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderRadius: 10,
-    marginVertical: 8,
+    backgroundColor: colors.slate50,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 10,
+    borderRadius: radius.control,
+    marginVertical: spacing.md,
     borderWidth: 1,
-    borderColor: '#f1f5f9',
+    borderColor: colors.borderSubtle,
   },
   locationPin: {
-    fontSize: 14,
-    marginRight: 6,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.primary,
+    marginRight: spacing.sm,
   },
   locationTextGroup: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
-    gap: 4,
+    gap: 6,
   },
   locationLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#64748b',
+    fontSize: 12,
+    fontWeight: '500',
+    color: colors.textSecondary,
   },
   locationValue: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: '#1e293b',
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.slate700,
   },
   footerPrices: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     borderTopWidth: 1,
-    borderTopColor: '#f1f5f9',
-    paddingTop: 10,
+    borderTopColor: colors.borderSubtle,
+    paddingTop: spacing.md,
   },
   priceSub: {
-    fontSize: 9,
-    color: '#64748b',
-    textTransform: 'uppercase',
+    ...type.label,
+    fontSize: 10,
+    color: colors.textTertiary,
   },
   priceUsd: {
-    fontSize: 17,
-    fontWeight: '900',
-    color: '#0f172a',
+    ...type.kpi,
+    color: colors.usd,
+    marginTop: 2,
+  },
+  priceUsdCurrency: {
+    fontSize: 12,
+    fontWeight: '600',
   },
   priceBs: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#059669',
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.ves,
+    ...type.tabular,
   },
   costoBox: {
     alignItems: 'flex-end',
   },
   costoLabel: {
-    fontSize: 10,
-    color: '#94a3b8',
-    marginBottom: 2,
+    fontSize: 12,
+    color: colors.textTertiary,
+    marginBottom: spacing.xs,
+    ...type.tabular,
   },
   margenPill: {
-    backgroundColor: '#ecfdf5',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
+    backgroundColor: colors.successSoft,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+    borderRadius: radius.pill,
   },
   margenText: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: '#059669',
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.successText,
+    ...type.tabular,
   },
 });

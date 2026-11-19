@@ -1,16 +1,11 @@
 import type { EstadoOrden } from '../../types';
 
-const statusStyles: Record<EstadoOrden, string> = {
-  'En Espera':
-    'bg-slate-100 text-slate-700 border border-slate-300',
-  'En Diagnóstico':
-    'bg-yellow-100 text-yellow-800 border border-yellow-300',
-  'En Reparación':
-    'bg-blue-100 text-blue-800 border border-blue-300',
-  'Listo':
-    'bg-green-100 text-green-800 border border-green-300',
-  'Entregado':
-    'bg-gray-100 text-gray-500 border border-gray-200',
+export const STATUS_STYLES: Record<EstadoOrden, { chip: string; dot: string }> = {
+  'En Espera': { chip: 'bg-slate-100 text-slate-700 ring-slate-200', dot: 'bg-slate-400' },
+  'En Diagnóstico': { chip: 'bg-sky-50 text-sky-800 ring-sky-200', dot: 'bg-sky-500' },
+  'En Reparación': { chip: 'bg-brand-50 text-brand-800 ring-brand-200', dot: 'bg-brand-500' },
+  Listo: { chip: 'bg-emerald-50 text-emerald-800 ring-emerald-200', dot: 'bg-emerald-500' },
+  Entregado: { chip: 'bg-slate-50 text-slate-500 ring-slate-200', dot: 'bg-slate-300' },
 };
 
 interface BadgeProps {
@@ -19,12 +14,13 @@ interface BadgeProps {
 }
 
 export default function Badge({ status, label }: BadgeProps) {
+  const s = STATUS_STYLES[status];
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusStyles[status]}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset whitespace-nowrap ${s.chip}`}
     >
+      <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
       {label ?? status}
     </span>
   );
 }
-

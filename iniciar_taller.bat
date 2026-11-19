@@ -6,7 +6,8 @@ echo           TALLERMOTO PRO - SISTEMA DE GESTION DE TALLER (MVP 1.0)
 echo ======================================================================
 echo.
 
-set "ROOT_DIR=d:\Personal - Laptop\Proyecto_moto"
+set "ROOT_DIR=%~dp0"
+if "%ROOT_DIR:~-1%"=="\" set "ROOT_DIR=%ROOT_DIR:~0,-1%"
 
 echo [1/3] Verificando e inicializando base de datos local y usuarios...
 cd /d "%ROOT_DIR%"
